@@ -1,13 +1,8 @@
 import { ITokenPair } from "./token.interface";
-import { IPublicUser, IUser } from "./user.interface";
+import { IUser } from "./user.interface";
 
-export interface IAuthServiceResponse {
+export interface IAuthResponse {
     user: IUser;
-    tokens: ITokenPair;
-}
-
-export interface IAuthPublicResponse {
-    user: IPublicUser;
     tokens: ITokenPair;
 }
 

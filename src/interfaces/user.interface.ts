@@ -1,6 +1,6 @@
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";
-import { IBase } from "../models/base.model";
+import { IBase } from "./base.interface";
 
 export interface IUser extends IBase {
     _id: string;
