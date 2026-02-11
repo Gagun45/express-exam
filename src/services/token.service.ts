@@ -1,0 +1,50 @@
+import jwt from "jsonwebtoken";
+
+import { config } from "../configs/config";
+import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { TokenTypesEnum } from "../enums/token-types.enum";
+import { ApiError } from "../errors/api.error";
+import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
+import { tokenRepository } from "../repositories/token.repository";
+
+export const tokenService = {
+    generateTokens: (payload: ITokenPayload): ITokenPair => {
+        const accessToken = jwt.sign(payload, "qwe", {
+            expiresIn: "20m",
+        });
+        const refreshToken = jwt.sign(payload, "qwe", {
+            expiresIn: "20m",
+        });
+        return { accessToken, refreshToken };
+    },
+    verifyToken: (token: string, type: TokenTypesEnum): ITokenPayload => {
+        try {
+            let secret: string;
+            switch (type) {
+                case TokenTypesEnum.ACCESS:
+                    secret = config.JWT_ACCESS_SECRET;
+                    break;
+                case TokenTypesEnum.REFRESH:
+                    secret = config.JWT_REFRESH_SECRET;
+                    break;
+                default:
+                    throw new ApiError(
+                        "Invalid token type",
+                        StatusCodesEnum.BAD_REQUEST,
+                    );
+            }
+            return jwt.verify(token, secret) as ITokenPayload;
+        } catch {
+            throw new ApiError("Invalid token", StatusCodesEnum.UNAUTHORIZED);
+        }
+    },
+    isTokenExists: async (
+        token: string,
+        type: TokenTypesEnum,
+    ): Promise<boolean> => {
+        const foundToken = await tokenRepository.findByParams({
+            [type]: token,
+        });
+        return !!foundToken;
+    },
+};

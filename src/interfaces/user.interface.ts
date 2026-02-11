@@ -1,13 +1,14 @@
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";
+import { IBase } from "../models/base.model";
 
-export interface IUser {
-    _id?: string;
+export interface IUser extends IBase {
+    _id: string;
     email: string;
     password: string;
     role: UserRolesEnum;
     accountType: UserAccountTypesEnum;
     isBanned: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
 }
+
+export type IUserCreateDto = Pick<IUser, "email" | "password">;

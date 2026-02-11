@@ -20,7 +20,7 @@ const UserSchema = new Schema<IUser>(
         },
         isBanned: { type: Boolean, default: false },
     },
-    { timestamps: true },
+    { timestamps: true, versionKey: false },
 );
 
 export const User = model<IUser>("User", UserSchema);
