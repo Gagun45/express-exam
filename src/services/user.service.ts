@@ -1,6 +1,7 @@
 import { QueryFilter } from "mongoose";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { ApiError } from "../errors/api.error";
 import { IUser, IUserCreateDto } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
@@ -33,5 +34,16 @@ export const userService = {
         if (!user)
             throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
         return user;
+    },
+    updateAccountType: (
+        userId: string,
+        accountType: UserAccountTypesEnum,
+    ): Promise<IUser> => {
+        const updatedUser = userRepository.updateAccountType(
+            userId,
+            accountType,
+        );
+        if (!updatedUser) throw new ApiError("User not found", 400);
+        return updatedUser;
     },
 };
