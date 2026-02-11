@@ -1,0 +1,10 @@
+services:
+  db:
+    image: mongo
+    ports:
+      - "3500:27017"
+    env_file:
+      - .env
+    volumes:
+      - ./mongo_db:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
