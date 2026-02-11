@@ -5,7 +5,6 @@ import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { TokenTypesEnum } from "../enums/token-types.enum";
 import { ApiError } from "../errors/api.error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
-import { tokenRepository } from "../repositories/token.repository";
 
 export const tokenService = {
     generateTokens: (payload: ITokenPayload): ITokenPair => {
@@ -39,14 +38,14 @@ export const tokenService = {
             throw new ApiError("Invalid token", StatusCodesEnum.UNAUTHORIZED);
         }
     },
-    assertTokenExists: async (
-        token: string,
-        type: TokenTypesEnum,
-    ): Promise<void> => {
-        const foundToken = await tokenRepository.findOneByParams({
-            [type]: token,
-        });
-        if (!foundToken)
-            throw new ApiError("Invalid token", StatusCodesEnum.UNAUTHORIZED);
-    },
+    // assertTokenExists: async (
+    //     token: string,
+    //     type: TokenTypesEnum,
+    // ): Promise<void> => {
+    //     const foundToken = await tokenRepository.findOneByParams({
+    //         [type]: token,
+    //     });
+    //     if (!foundToken)
+    //         throw new ApiError("Invalid token", StatusCodesEnum.UNAUTHORIZED);
+    // },
 };

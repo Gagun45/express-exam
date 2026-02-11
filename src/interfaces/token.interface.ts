@@ -8,13 +8,9 @@ export interface IToken extends IBase {
     _id: string;
     user: Types.ObjectId;
     refreshToken: string;
-    accessToken: string;
 }
 
-export type ITokenCreateDto = Pick<
-    IToken,
-    "user" | "accessToken" | "refreshToken"
->;
+export type ITokenCreateDto = Pick<IToken, "user" | "refreshToken">;
 
 export interface ITokenPayload {
     userId: string;
@@ -22,4 +18,7 @@ export interface ITokenPayload {
     accountType: UserAccountTypesEnum;
 }
 
-export type ITokenPair = Pick<IToken, "accessToken" | "refreshToken">;
+export type ITokenPair = {
+    accessToken: string;
+    refreshToken: string;
+};

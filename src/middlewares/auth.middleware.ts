@@ -21,11 +21,6 @@ export const authMiddleware = {
                 TokenTypesEnum.ACCESS,
             );
 
-            await tokenService.assertTokenExists(
-                accessToken,
-                TokenTypesEnum.ACCESS,
-            );
-
             const user = await userService.findOneByParams({
                 _id: tokenPayload.userId,
             });
