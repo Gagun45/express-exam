@@ -2,9 +2,10 @@ import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { IAuthCredentials } from "../interfaces/auth.interface";
-import { IUserCreateDto } from "../interfaces/user.interface";
+import { IUser, IUserCreateDto } from "../interfaces/user.interface";
 import { userPresenter } from "../presenters/user.presenter";
 import { authService } from "../services/auth.service";
+import { userService } from "../services/user.service";
 
 export const authController = {
     signUp: async (req: Request, res: Response, next: NextFunction) => {
@@ -29,6 +30,16 @@ export const authController = {
                 ...data,
                 user: publicUser,
             });
+        } catch (e) {
+            next(e);
+        }
+    },
+    me: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const user = res.locals.user as IUser;
+            const data = await userService.getById(user._id);
+            const publicUser = userPresenter.toPublicUser(data);
+            res.status(StatusCodesEnum.OK).json(publicUser);
         } catch (e) {
             next(e);
         }

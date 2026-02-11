@@ -9,10 +9,10 @@ import { tokenRepository } from "../repositories/token.repository";
 
 export const tokenService = {
     generateTokens: (payload: ITokenPayload): ITokenPair => {
-        const accessToken = jwt.sign(payload, "qwe", {
+        const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
             expiresIn: "20m",
         });
-        const refreshToken = jwt.sign(payload, "qwe", {
+        const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
             expiresIn: "20m",
         });
         return { accessToken, refreshToken };
@@ -34,17 +34,19 @@ export const tokenService = {
                     );
             }
             return jwt.verify(token, secret) as ITokenPayload;
-        } catch {
+        } catch (e) {
+            console.log(e);
             throw new ApiError("Invalid token", StatusCodesEnum.UNAUTHORIZED);
         }
     },
-    isTokenExists: async (
+    assertTokenExists: async (
         token: string,
         type: TokenTypesEnum,
-    ): Promise<boolean> => {
-        const foundToken = await tokenRepository.findByParams({
+    ): Promise<void> => {
+        const foundToken = await tokenRepository.findOneByParams({
             [type]: token,
         });
-        return !!foundToken;
+        if (!foundToken)
+            throw new ApiError("Invalid token", StatusCodesEnum.UNAUTHORIZED);
     },
 };

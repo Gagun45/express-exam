@@ -7,7 +7,7 @@ export const tokenRepository = {
     create: (dto: ITokenCreateDto): Promise<IToken> => {
         return Token.create(dto);
     },
-    findByParams: (params: QueryFilter<IToken>): Promise<IToken[]> => {
-        return Token.find(params);
+    findOneByParams: (params: QueryFilter<IToken>): Promise<IToken | null> => {
+        return Token.findOne(params);
     },
 };

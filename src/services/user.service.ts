@@ -28,4 +28,10 @@ export const userService = {
     ): Promise<IUser | null> => {
         return await userRepository.findOneByParams(params);
     },
+    getById: async (userId: string): Promise<IUser> => {
+        const user = await userRepository.findById(userId);
+        if (!user)
+            throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
+        return user;
+    },
 };

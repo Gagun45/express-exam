@@ -10,4 +10,7 @@ export const userRepository = {
     findOneByParams: (params: QueryFilter<IUser>): Promise<IUser> => {
         return User.findOne(params);
     },
+    findById: (userId: string): Promise<IUser | null> => {
+        return User.findById(userId);
+    },
 };
