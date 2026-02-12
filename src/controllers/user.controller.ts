@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
+import { UserRolesEnum } from "../enums/user-roles.enum";
 import { userPresenter } from "../presenters/user.presenter";
 import { userService } from "../services/user.service";
 
@@ -16,10 +17,10 @@ export const userController = {
             const accountType = req.body.accountType as UserAccountTypesEnum;
             const targetUserId = res.locals.targetUserId;
 
-            const updatedUser = await userService.updateAccountType(
+            const updatedUser = await userService.changeAccountType(
                 targetUserId,
-                accountType,
                 userId,
+                accountType,
             );
             const publicUser = userPresenter.toPublicUser(updatedUser);
             res.status(StatusCodesEnum.CREATED).json(publicUser);
@@ -67,6 +68,22 @@ export const userController = {
             const user = await userService.downgradeFromManager(
                 targetUserId,
                 userId,
+            );
+            const publicUser = userPresenter.toPublicUser(user);
+            res.status(StatusCodesEnum.OK).json(publicUser);
+        } catch (e) {
+            next(e);
+        }
+    },
+    changeRole: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = res.locals.userId;
+            const targetUserId = res.locals.targetUserId;
+            const role = req.body.role as UserRolesEnum;
+            const user = await userService.changeBasicRoles(
+                targetUserId,
+                userId,
+                role,
             );
             const publicUser = userPresenter.toPublicUser(user);
             res.status(StatusCodesEnum.OK).json(publicUser);

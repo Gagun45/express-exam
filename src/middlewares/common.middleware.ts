@@ -3,12 +3,10 @@ import { ObjectSchema } from "joi";
 import { isObjectIdOrHexString } from "mongoose";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
-import { UserRolesEnum } from "../enums/user-roles.enum";
 import { ApiError } from "../errors/api.error";
-import { userService } from "../services/user.service";
 
 export const commonMiddleware = {
-    isTargetUserIdValid: (key: string) => {
+    isUserIdValid: (key: string) => {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const id = String(req.params[key]);
@@ -37,21 +35,5 @@ export const commonMiddleware = {
                 next(new ApiError(message, StatusCodesEnum.BAD_REQUEST));
             }
         };
-    },
-    targetIsNotAdmin: async (
-        req: Request,
-        res: Response,
-        next: NextFunction,
-    ) => {
-        try {
-            const targetUserId = res.locals.targetUserId;
-            const targetUser = await userService.getById(targetUserId);
-            if (targetUser.role === UserRolesEnum.ADMIN) {
-                throw new ApiError("Forbidden", StatusCodesEnum.FORBIDDEN);
-            }
-            next();
-        } catch (e) {
-            next(e);
-        }
     },
 };

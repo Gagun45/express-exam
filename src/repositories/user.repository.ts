@@ -1,7 +1,5 @@
 import { QueryFilter } from "mongoose";
 
-import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
-import { UserRolesEnum } from "../enums/user-roles.enum";
 import { IUser, IUserCreateDto } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
@@ -14,15 +12,9 @@ export const userRepository = {
 
     findById: (userId: string): Promise<IUser | null> => User.findById(userId),
 
-    updateAccountType: (
+    updateById: (
         userId: string,
-        accountType: UserAccountTypesEnum,
+        params: QueryFilter<IUser>,
     ): Promise<IUser | null> =>
-        User.findByIdAndUpdate(
-            userId,
-            { accountType },
-            { returnDocument: "after" },
-        ),
-    updateRole: (userId: string, role: UserRolesEnum): Promise<IUser | null> =>
-        User.findByIdAndUpdate(userId, { role }, { returnDocument: "after" }),
+        User.findByIdAndUpdate(userId, params, { returnDocument: "after" }),
 };

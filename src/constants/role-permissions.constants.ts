@@ -4,6 +4,6 @@ import { UserRolesEnum } from "../enums/user-roles.enum";
 export const rolePermissions: Record<UserRolesEnum, PermissionsEnum[]> = {
     buyer: [],
     seller: [],
-    manager: [PermissionsEnum.UPDATE_ACCOUNT_TYPE],
+    manager: [PermissionsEnum.CHANGE_ACCOUNT_TYPE, PermissionsEnum.CHANGE_ROLE],
     admin: Object.values(PermissionsEnum) as unknown as PermissionsEnum[],
 };

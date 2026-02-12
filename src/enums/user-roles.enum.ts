@@ -4,3 +4,5 @@ export enum UserRolesEnum {
     MANAGER = "manager",
     ADMIN = "admin",
 }
+
+export const BasicRoles = [UserRolesEnum.BUYER, UserRolesEnum.SELLER];

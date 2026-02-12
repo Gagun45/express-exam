@@ -2,8 +2,9 @@ import { QueryFilter } from "mongoose";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
-import { UserRolesEnum } from "../enums/user-roles.enum";
+import { BasicRoles, UserRolesEnum } from "../enums/user-roles.enum";
 import { ApiError } from "../errors/api.error";
+import { preventAdminModification } from "../helpers/admin.helper";
 import { IUser, IUserCreateDto } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
 
@@ -13,6 +14,21 @@ export const userService = {
     },
     getAll: (): Promise<IUser[]> => {
         return userRepository.getAll();
+    },
+    updateUserRole: async (
+        targetUserId: string,
+        userId: string,
+        role: UserRolesEnum,
+    ): Promise<IUser> => {
+        if (targetUserId === userId) {
+            throw new ApiError(
+                "Forbidden to modify your own role",
+                StatusCodesEnum.FORBIDDEN,
+            );
+        }
+        const targetUser = await userService.getById(targetUserId);
+        preventAdminModification(targetUser);
+        return await userRepository.updateById(targetUserId, { role });
     },
     assertEmailIsUnique: async (email: string): Promise<void> => {
         const user = await userRepository.findOneByParams({ email });
@@ -39,10 +55,10 @@ export const userService = {
             throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
         return user;
     },
-    updateAccountType: (
+    changeAccountType: async (
         targetUserId: string,
-        accountType: UserAccountTypesEnum,
         userId: string,
+        accountType: UserAccountTypesEnum,
     ): Promise<IUser> => {
         if (userId === targetUserId) {
             throw new ApiError(
@@ -50,58 +66,27 @@ export const userService = {
                 StatusCodesEnum.FORBIDDEN,
             );
         }
-        const updatedUser = userRepository.updateAccountType(
-            targetUserId,
-            accountType,
-        );
-        if (!updatedUser) throw new ApiError("User not found", 400);
-        return updatedUser;
+        const targetUser = await userService.getById(targetUserId);
+        preventAdminModification(targetUser);
+        return await userRepository.updateById(targetUserId, { accountType });
     },
-    upgradeToManager: async (
+    upgradeToManager: (targetUserId: string, userId: string): Promise<IUser> =>
+        userService.updateUserRole(targetUserId, userId, UserRolesEnum.MANAGER),
+    downgradeFromManager: (
         targetUserId: string,
         userId: string,
-    ): Promise<IUser> => {
-        if (targetUserId === userId) {
-            throw new ApiError(
-                "Forbidden to modify your own role",
-                StatusCodesEnum.FORBIDDEN,
-            );
-        }
-        return await userService.updateRole(
-            targetUserId,
-            userId,
-            UserRolesEnum.MANAGER,
-        );
-    },
-    downgradeFromManager: async (
-        targetUserId: string,
-        userId: string,
-    ): Promise<IUser> => {
-        if (targetUserId === userId) {
-            throw new ApiError(
-                "Forbidden to modify your own role",
-                StatusCodesEnum.FORBIDDEN,
-            );
-        }
-        return await userService.updateRole(
-            targetUserId,
-            userId,
-            UserRolesEnum.BUYER,
-        );
-    },
-    updateRole: async (
+    ): Promise<IUser> =>
+        userService.updateUserRole(targetUserId, userId, UserRolesEnum.BUYER),
+    changeBasicRoles: (
         targetUserId: string,
         userId: string,
         role: UserRolesEnum,
     ): Promise<IUser> => {
-        if (targetUserId === userId)
+        if (!BasicRoles.includes(role))
             throw new ApiError(
-                "Forbidden to modify your own role",
-                StatusCodesEnum.FORBIDDEN,
+                "Invalid role type",
+                StatusCodesEnum.BAD_REQUEST,
             );
-        const updatedUser = await userRepository.updateRole(targetUserId, role);
-        if (!updatedUser)
-            throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
-        return updatedUser;
+        return userService.updateUserRole(targetUserId, userId, role);
     },
 };

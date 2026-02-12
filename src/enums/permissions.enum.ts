@@ -1,5 +1,6 @@
 // src/constants/permissions.ts
 export enum PermissionsEnum {
-    UPDATE_ACCOUNT_TYPE = "updateAccountType",
+    CHANGE_ACCOUNT_TYPE = "changeAccountType",
     MANAGE_MANAGER_ROLE = "manageManagerRole",
+    CHANGE_ROLE = "changeRole",
 }
