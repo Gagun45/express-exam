@@ -6,7 +6,7 @@ export const userPresenter = {
             accountType: entity.accountType,
             email: entity.email,
             isBanned: entity.isBanned,
-            id: entity._id,
+            id: entity._id.toString(),
             role: entity.role,
         };
     },

@@ -1,9 +1,13 @@
+import dns from "node:dns";
+
 import express, { NextFunction, Request, Response } from "express";
 
 import { config } from "./configs/config";
 import { dbConnection } from "./db/db-connect";
 import { ApiError } from "./errors/api.error";
 import { apiRouter } from "./routers/api.router";
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const app = express();
 

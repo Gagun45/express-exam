@@ -3,10 +3,7 @@ import { ApiError } from "../errors/api.error";
 
 export const getTokenFromHeader = (authHeader?: string): string => {
     if (!authHeader || !authHeader.startsWith("Bearer")) {
-        throw new ApiError(
-            "Authorization token missing",
-            StatusCodesEnum.UNAUTHORIZED,
-        );
+        throw new ApiError("Unauthorized", StatusCodesEnum.UNAUTHORIZED);
     }
     return authHeader.split(" ")[1];
 };

@@ -7,6 +7,7 @@ import { commonMiddleware } from "../middlewares/common.middleware";
 
 const router = Router();
 
+router.get("/", authMiddleware.checkAccessToken, userController.getAll);
 router.patch(
     "/:userId/account-type",
     commonMiddleware.isIdValid("userId"),

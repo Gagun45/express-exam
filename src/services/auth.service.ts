@@ -15,7 +15,7 @@ export const authService = {
         const password = await passwordService.hash(dto.password);
         const newUser = await userService.create({ ...dto, password });
         const tokens = tokenService.generateTokens({
-            userId: newUser._id,
+            userId: newUser._id.toString(),
             role: newUser.role,
             accountType: newUser.accountType,
         });
@@ -32,7 +32,7 @@ export const authService = {
                 "Invalid credentials",
                 StatusCodesEnum.UNAUTHORIZED,
             );
-        const { _id: userId, password, role, accountType } = user;
+        const { _id, password, role, accountType } = user;
         const isPasswordCorrect = await passwordService.compare(
             dto.password,
             password,
@@ -45,11 +45,11 @@ export const authService = {
         const tokens = tokenService.generateTokens({
             accountType,
             role,
-            userId,
+            userId: _id.toString(),
         });
         await tokenRepository.create({
             ...tokens,
-            user: new Types.ObjectId(userId),
+            user: new Types.ObjectId(_id),
         });
         return { tokens, user };
     },

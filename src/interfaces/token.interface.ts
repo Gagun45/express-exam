@@ -5,7 +5,6 @@ import { UserRolesEnum } from "../enums/user-roles.enum";
 import { IBase } from "./base.interface";
 
 export interface IToken extends IBase {
-    _id: string;
     user: Types.ObjectId;
     refreshToken: string;
 }

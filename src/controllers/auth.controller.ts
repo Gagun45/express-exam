@@ -5,7 +5,7 @@ import { IAuthCredentials } from "../interfaces/auth.interface";
 import { IUser, IUserCreateDto } from "../interfaces/user.interface";
 import { userPresenter } from "../presenters/user.presenter";
 import { authService } from "../services/auth.service";
-import { userService } from "../services/user.service";
+import { tokenService } from "../services/token.service";
 
 export const authController = {
     signUp: async (req: Request, res: Response, next: NextFunction) => {
@@ -34,11 +34,19 @@ export const authController = {
             next(e);
         }
     },
+    logout: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const refreshToken = req.body.refreshToken as string;
+            await tokenService.deleteOneByParams({ refreshToken });
+            res.status(StatusCodesEnum.NO_CONTENT).json();
+        } catch (e) {
+            next(e);
+        }
+    },
     me: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const user = res.locals.user as IUser;
-            const data = await userService.getById(user._id);
-            const publicUser = userPresenter.toPublicUser(data);
+            const publicUser = userPresenter.toPublicUser(user);
             res.status(StatusCodesEnum.OK).json(publicUser);
         } catch (e) {
             next(e);

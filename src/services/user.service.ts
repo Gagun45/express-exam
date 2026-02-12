@@ -10,6 +10,9 @@ export const userService = {
     create: (dto: IUserCreateDto): Promise<IUser> => {
         return userRepository.create(dto);
     },
+    getAll: (): Promise<IUser[]> => {
+        return userRepository.getAll();
+    },
     assertEmailIsUnique: async (email: string): Promise<void> => {
         const user = await userRepository.findOneByParams({ email });
         if (user)

@@ -34,7 +34,8 @@ export const authMiddleware = {
                 );
             if (user.isBanned)
                 throw new ApiError("User is banned", StatusCodesEnum.FORBIDDEN);
-            req.res.locals.user = user;
+            res.locals.userId = tokenPayload.userId;
+            res.locals.user = user;
             next();
         } catch (e) {
             next(e);
@@ -42,7 +43,7 @@ export const authMiddleware = {
     },
     checkPermission: (permission: PermissionsEnum) => {
         return async (req: Request, res: Response, next: NextFunction) => {
-            const user = req.res.locals.user as IUser;
+            const user = res.locals.user as IUser;
             const userRole = user.role;
             const permissions = rolePermissions[userRole];
             if (!permissions.includes(permission)) {

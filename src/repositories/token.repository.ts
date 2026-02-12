@@ -1,4 +1,4 @@
-import { QueryFilter } from "mongoose";
+import { DeleteResult, QueryFilter } from "mongoose";
 
 import { IToken, ITokenCreateDto } from "../interfaces/token.interface";
 import { Token } from "../models/token.model";
@@ -9,5 +9,8 @@ export const tokenRepository = {
     },
     findOneByParams: (params: QueryFilter<IToken>): Promise<IToken | null> => {
         return Token.findOne(params);
+    },
+    deleteOneByParams: (params: QueryFilter<IToken>): Promise<DeleteResult> => {
+        return Token.deleteOne(params);
     },
 };
