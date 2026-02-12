@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
-import { ApiError } from "../errors/api.error";
 import { userPresenter } from "../presenters/user.presenter";
 import { userService } from "../services/user.service";
 
@@ -13,17 +12,14 @@ export const userController = {
         next: NextFunction,
     ) => {
         try {
-            const currentUserId = res.locals.userId as string;
-            const { accountType } = req.body as {
-                accountType: UserAccountTypesEnum;
-            };
-            const targetUserId = String(req.params["userId"]);
-            if (currentUserId === targetUserId) {
-                throw new ApiError("Forbidden", StatusCodesEnum.FORBIDDEN);
-            }
+            const userId = res.locals.userId;
+            const accountType = req.body.accountType as UserAccountTypesEnum;
+            const targetUserId = res.locals.targetUserId;
+
             const updatedUser = await userService.updateAccountType(
                 targetUserId,
                 accountType,
+                userId,
             );
             const publicUser = userPresenter.toPublicUser(updatedUser);
             res.status(StatusCodesEnum.CREATED).json(publicUser);
@@ -38,6 +34,42 @@ export const userController = {
                 userPresenter.toPublicUser(user),
             );
             res.status(StatusCodesEnum.OK).json({ data: publicUsers });
+        } catch (e) {
+            next(e);
+        }
+    },
+    upgradeToManager: async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const userId = res.locals.userId;
+            const targetUserId = res.locals.targetUserId;
+            const user = await userService.upgradeToManager(
+                targetUserId,
+                userId,
+            );
+            const publicUser = userPresenter.toPublicUser(user);
+            res.status(StatusCodesEnum.OK).json(publicUser);
+        } catch (e) {
+            next(e);
+        }
+    },
+    downgradeFromManager: async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const userId = res.locals.userId;
+            const targetUserId = res.locals.targetUserId;
+            const user = await userService.downgradeFromManager(
+                targetUserId,
+                userId,
+            );
+            const publicUser = userPresenter.toPublicUser(user);
+            res.status(StatusCodesEnum.OK).json(publicUser);
         } catch (e) {
             next(e);
         }

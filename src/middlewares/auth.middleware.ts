@@ -6,7 +6,6 @@ import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { TokenTypesEnum } from "../enums/token-types.enum";
 import { ApiError } from "../errors/api.error";
 import { getTokenFromHeader } from "../helpers/jwt.helper";
-import { IUser } from "../interfaces/user.interface";
 import { tokenService } from "../services/token.service";
 import { userService } from "../services/user.service";
 
@@ -29,7 +28,7 @@ export const authMiddleware = {
             });
             if (!user)
                 throw new ApiError(
-                    "User not found",
+                    "Unauthorized",
                     StatusCodesEnum.UNAUTHORIZED,
                 );
             if (user.isBanned)
@@ -43,7 +42,7 @@ export const authMiddleware = {
     },
     checkPermission: (permission: PermissionsEnum) => {
         return async (req: Request, res: Response, next: NextFunction) => {
-            const user = res.locals.user as IUser;
+            const user = res.locals.user;
             const userRole = user.role;
             const permissions = rolePermissions[userRole];
             if (!permissions.includes(permission)) {
