@@ -13,7 +13,12 @@ export const carBrandRepository = {
     getAll: (): Promise<ICarBrand[]> => {
         return CarBrand.find();
     },
-    findOneByParams: (params: QueryFilter<ICarBrand>) => {
+    findOneByParams: (
+        params: QueryFilter<ICarBrand>,
+    ): Promise<ICarBrand | null> => {
         return CarBrand.findOne(params);
+    },
+    findById: (brandId: string): Promise<ICarBrand | null> => {
+        return CarBrand.findById(brandId);
     },
 };

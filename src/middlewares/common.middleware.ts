@@ -6,14 +6,13 @@ import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.error";
 
 export const commonMiddleware = {
-    isUserIdValid: (key: string) => {
+    isIdValid: (key: string) => {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const id = String(req.params[key]);
                 if (!isObjectIdOrHexString(id)) {
                     throw new ApiError("Invalid id", 400);
                 }
-                res.locals.targetUserId = id;
                 next();
             } catch (e) {
                 next(e);
@@ -23,7 +22,7 @@ export const commonMiddleware = {
     isBodyValid: (validator: ObjectSchema) => {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                req.body = await validator.validateAsync(req.body, {
+                req.body = await validator.validateAsync(req.body || {}, {
                     stripUnknown: true,
                     abortEarly: false,
                 });

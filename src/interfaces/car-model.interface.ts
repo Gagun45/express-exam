@@ -1,9 +1,9 @@
 import { Types } from "mongoose";
 
-import { IBase } from "./base.interface";
-
-export interface ICarModel extends IBase {
-    name: string;
-    slug: string;
+export interface ICarModel {
+    _id: Types.ObjectId;
+    model: string;
     brandId: Types.ObjectId;
 }
+
+export type ICarModelCreateDto = Pick<ICarModel, "model">;

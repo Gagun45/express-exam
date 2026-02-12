@@ -9,7 +9,8 @@ export const validationFields = {
         password: Joi.string().regex(Regex.PASSWORD),
         accountType: Joi.string().valid(...Object.values(UserAccountTypesEnum)),
     },
-    carBrand: {
+    car: {
         brand: Joi.string().min(3).max(50).trim(),
+        model: Joi.string().min(3).max(50).trim(),
     },
 };

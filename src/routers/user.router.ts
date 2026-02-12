@@ -10,7 +10,7 @@ const router = Router();
 router.get("/", authMiddleware.checkAccessToken, userController.getAll);
 router.patch(
     "/:userId/account-type",
-    commonMiddleware.isUserIdValid("userId"),
+    commonMiddleware.isIdValid("userId"),
     commonMiddleware.isBodyValid(userValidator.changeAccountType),
     authMiddleware.checkAccessToken,
     userController.changeAccountType,
@@ -18,7 +18,7 @@ router.patch(
 
 router.patch(
     "/:userId/change-role",
-    commonMiddleware.isUserIdValid("userId"),
+    commonMiddleware.isIdValid("userId"),
     commonMiddleware.isBodyValid(userValidator.changeRole),
     authMiddleware.checkAccessToken,
     userController.changeRole,
@@ -26,14 +26,14 @@ router.patch(
 
 router.patch(
     "/:userId/ban",
-    commonMiddleware.isUserIdValid("userId"),
+    commonMiddleware.isIdValid("userId"),
     authMiddleware.checkAccessToken,
     userController.banHandler(true),
 );
 
 router.patch(
     "/:userId/unban",
-    commonMiddleware.isUserIdValid("userId"),
+    commonMiddleware.isIdValid("userId"),
     authMiddleware.checkAccessToken,
     userController.banHandler(false),
 );

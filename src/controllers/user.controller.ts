@@ -24,7 +24,8 @@ export const userController = {
         next: NextFunction,
     ) => {
         try {
-            const { currentUser, targetUserId } = res.locals;
+            const { currentUser } = res.locals;
+            const targetUserId = String(req.params["userId"]);
             const accountType = req.body.accountType as UserAccountTypesEnum;
 
             const updatedUser = await userService.changeAccountType(
@@ -40,7 +41,8 @@ export const userController = {
     },
     changeRole: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { currentUser, targetUserId } = res.locals;
+            const { currentUser } = res.locals;
+            const targetUserId = String(req.params["userId"]);
             const newRole = req.body.role as UserRolesEnum;
             const data = await userService.changeRole(
                 targetUserId,
@@ -56,7 +58,8 @@ export const userController = {
     banHandler: (newBanStatus: boolean) => {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const { currentUser, targetUserId } = res.locals;
+                const { currentUser } = res.locals;
+                const targetUserId = String(req.params["userId"]);
                 const data = await userService.changeBanStatus(
                     targetUserId,
                     currentUser,

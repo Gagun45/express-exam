@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ICarBrandCreateDto } from "../interfaces/car-brand.interface";
-import { IUser } from "../interfaces/user.interface";
 import { carBrandService } from "../services/car-brand.service";
 
 export const carBrandController = {
@@ -17,12 +16,9 @@ export const carBrandController = {
     create: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = req.body as ICarBrandCreateDto;
-            const currentUser = res.locals.currentUser as IUser;
-            const newBrand = await carBrandService.create(
-                dto,
-                currentUser.role,
-            );
-            res.status(StatusCodesEnum.OK).json(newBrand);
+            const currentUser = res.locals.currentUser;
+            const newBrand = await carBrandService.create(dto, currentUser);
+            res.status(StatusCodesEnum.CREATED).json(newBrand);
         } catch (e) {
             next(e);
         }

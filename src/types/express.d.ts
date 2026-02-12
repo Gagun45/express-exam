@@ -4,7 +4,6 @@ declare global {
     namespace Express {
         interface Locals {
             currentUserId: string;
-            targetUserId: string;
             currentUser: IUser;
         }
     }

@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { authRouter } from "./auth.router";
-import { carRouter } from "./car-brand.router";
+import { carRouter } from "./car.router";
 import { userRouter } from "./user.router";
 
 const router = Router();
