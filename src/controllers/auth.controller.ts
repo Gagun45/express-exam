@@ -45,8 +45,8 @@ export const authController = {
     },
     me: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const user = res.locals.user;
-            const publicUser = userPresenter.toPublicUser(user);
+            const currentUser = res.locals.currentUser;
+            const publicUser = userPresenter.toPublicUser(currentUser);
             res.status(StatusCodesEnum.OK).json(publicUser);
         } catch (e) {
             next(e);

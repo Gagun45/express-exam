@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-import { rolePermissions } from "../constants/role-permissions.constants";
-import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { TokenTypesEnum } from "../enums/token-types.enum";
 import { ApiError } from "../errors/api.error";
@@ -33,22 +31,11 @@ export const authMiddleware = {
                 );
             if (user.isBanned)
                 throw new ApiError("User is banned", StatusCodesEnum.FORBIDDEN);
-            res.locals.userId = tokenPayload.userId;
-            res.locals.user = user;
+            res.locals.currentUserId = user._id.toString();
+            res.locals.currentUser = user;
             next();
         } catch (e) {
             next(e);
         }
-    },
-    checkPermission: (permission: PermissionsEnum) => {
-        return async (req: Request, res: Response, next: NextFunction) => {
-            const user = res.locals.user;
-            const userRole = user.role;
-            const permissions = rolePermissions[userRole];
-            if (!permissions.includes(permission)) {
-                throw new ApiError("Forbidden", StatusCodesEnum.FORBIDDEN);
-            }
-            next();
-        };
     },
 };

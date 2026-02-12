@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-import { BasicRoles } from "../enums/user-roles.enum";
+import { UserRolesEnum } from "../enums/user-roles.enum";
 import { validationFields } from "./validation.fields";
 
 export const userValidator = {
@@ -9,7 +9,7 @@ export const userValidator = {
     }),
     changeRole: Joi.object({
         role: Joi.string()
-            .valid(...Object.values(BasicRoles))
+            .valid(...Object.values(UserRolesEnum))
             .required(),
     }),
 };

@@ -1,10 +1,12 @@
 import { QueryFilter } from "mongoose";
 
+import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
-import { BasicRoles, UserRolesEnum } from "../enums/user-roles.enum";
+import { UserRolesEnum } from "../enums/user-roles.enum";
 import { ApiError } from "../errors/api.error";
-import { preventAdminModification } from "../helpers/admin.helper";
+import { generalHelper } from "../helpers/general.helper";
+import { roleHelper } from "../helpers/role.helper";
 import { IUser, IUserCreateDto } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
 
@@ -12,23 +14,35 @@ export const userService = {
     create: (dto: IUserCreateDto): Promise<IUser> => {
         return userRepository.create(dto);
     },
-    getAll: (): Promise<IUser[]> => {
-        return userRepository.getAll();
-    },
-    updateUserRole: async (
+    changeRole: async (
         targetUserId: string,
-        userId: string,
-        role: UserRolesEnum,
-    ): Promise<IUser> => {
-        if (targetUserId === userId) {
+        currentUser: IUser,
+        newRole: UserRolesEnum,
+    ) => {
+        roleHelper.assertRoleHasPermission(
+            currentUser.role,
+            PermissionsEnum.CHANGE_ROLE,
+        );
+
+        const targetUser = await userService.getById(targetUserId);
+
+        generalHelper.assertObjectIdsAreNotEqual(
+            currentUser._id,
+            targetUser._id,
+        );
+
+        roleHelper.assertRoleIsHigher(currentUser.role, newRole);
+
+        if (newRole === UserRolesEnum.ADMIN) {
             throw new ApiError(
-                "Forbidden to modify your own role",
+                "Cannot assign admin role",
                 StatusCodesEnum.FORBIDDEN,
             );
         }
-        const targetUser = await userService.getById(targetUserId);
-        preventAdminModification(targetUser);
-        return await userRepository.updateById(targetUserId, { role });
+        return await userRepository.updateById(targetUserId, { role: newRole });
+    },
+    getAll: (): Promise<IUser[]> => {
+        return userRepository.getAll();
     },
     assertEmailIsUnique: async (email: string): Promise<void> => {
         const user = await userRepository.findOneByParams({ email });
@@ -57,36 +71,45 @@ export const userService = {
     },
     changeAccountType: async (
         targetUserId: string,
-        userId: string,
+        currentUser: IUser,
         accountType: UserAccountTypesEnum,
     ): Promise<IUser> => {
-        if (userId === targetUserId) {
-            throw new ApiError(
-                "Cannot modify your own account type",
-                StatusCodesEnum.FORBIDDEN,
-            );
-        }
+        roleHelper.assertRoleHasPermission(
+            currentUser.role,
+            PermissionsEnum.CHANGE_ACCOUNT_TYPE,
+        );
+
         const targetUser = await userService.getById(targetUserId);
-        preventAdminModification(targetUser);
+
+        generalHelper.assertObjectIdsAreNotEqual(
+            currentUser._id,
+            targetUser._id,
+        );
+
+        roleHelper.assertUserIsNotAdmin(targetUser);
+
         return await userRepository.updateById(targetUserId, { accountType });
     },
-    upgradeToManager: (targetUserId: string, userId: string): Promise<IUser> =>
-        userService.updateUserRole(targetUserId, userId, UserRolesEnum.MANAGER),
-    downgradeFromManager: (
+    changeBanStatus: async (
         targetUserId: string,
-        userId: string,
-    ): Promise<IUser> =>
-        userService.updateUserRole(targetUserId, userId, UserRolesEnum.BUYER),
-    changeBasicRoles: (
-        targetUserId: string,
-        userId: string,
-        role: UserRolesEnum,
+        currentUser: IUser,
+        newBanStatus: boolean,
     ): Promise<IUser> => {
-        if (!BasicRoles.includes(role))
-            throw new ApiError(
-                "Invalid role type",
-                StatusCodesEnum.BAD_REQUEST,
-            );
-        return userService.updateUserRole(targetUserId, userId, role);
+        roleHelper.assertRoleHasPermission(
+            currentUser.role,
+            PermissionsEnum.CHANGE_BAN_STATUS,
+        );
+        const targetUser = await userService.getById(targetUserId);
+
+        generalHelper.assertObjectIdsAreNotEqual(
+            currentUser._id,
+            targetUser._id,
+        );
+
+        roleHelper.assertUserIsNotAdmin(targetUser);
+
+        return await userRepository.updateById(targetUserId, {
+            isBanned: newBanStatus,
+        });
     },
 };

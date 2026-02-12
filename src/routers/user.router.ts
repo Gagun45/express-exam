@@ -1,7 +1,6 @@
 import { Router } from "express";
 
 import { userController } from "../controllers/user.controller";
-import { PermissionsEnum } from "../enums/permissions.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
 import { userValidator } from "../validators/user.schema";
@@ -14,24 +13,7 @@ router.patch(
     commonMiddleware.isUserIdValid("userId"),
     commonMiddleware.isBodyValid(userValidator.changeAccountType),
     authMiddleware.checkAccessToken,
-    authMiddleware.checkPermission(PermissionsEnum.CHANGE_ACCOUNT_TYPE),
-    userController.updateAccountType,
-);
-
-router.patch(
-    "/:userId/upgrade-to-manager",
-    commonMiddleware.isUserIdValid("userId"),
-    authMiddleware.checkAccessToken,
-    authMiddleware.checkPermission(PermissionsEnum.MANAGE_MANAGER_ROLE),
-    userController.upgradeToManager,
-);
-
-router.patch(
-    "/:userId/downgrade-from-manager",
-    commonMiddleware.isUserIdValid("userId"),
-    authMiddleware.checkAccessToken,
-    authMiddleware.checkPermission(PermissionsEnum.MANAGE_MANAGER_ROLE),
-    userController.downgradeFromManager,
+    userController.changeAccountType,
 );
 
 router.patch(
@@ -39,8 +21,21 @@ router.patch(
     commonMiddleware.isUserIdValid("userId"),
     commonMiddleware.isBodyValid(userValidator.changeRole),
     authMiddleware.checkAccessToken,
-    authMiddleware.checkPermission(PermissionsEnum.CHANGE_ROLE),
     userController.changeRole,
+);
+
+router.patch(
+    "/:userId/ban",
+    commonMiddleware.isUserIdValid("userId"),
+    authMiddleware.checkAccessToken,
+    userController.banHandler(true),
+);
+
+router.patch(
+    "/:userId/unban",
+    commonMiddleware.isUserIdValid("userId"),
+    authMiddleware.checkAccessToken,
+    userController.banHandler(false),
 );
 
 export const userRouter = router;
