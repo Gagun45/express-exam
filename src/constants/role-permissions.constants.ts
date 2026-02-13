@@ -11,6 +11,7 @@ export const rolePermissions: Record<UserRolesEnum, PermissionsEnum[]> = {
         PermissionsEnum.ADD_BRAND_AND_MODELS,
         PermissionsEnum.CREATE_AD,
         PermissionsEnum.VIEW_REPORTS,
+        PermissionsEnum.CREATE_CITY,
     ],
     admin: Object.values(PermissionsEnum) as unknown as PermissionsEnum[],
 } as const;

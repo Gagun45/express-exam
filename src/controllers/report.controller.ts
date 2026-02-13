@@ -22,7 +22,7 @@ export const reportController = {
         try {
             const { currentUser } = res.locals;
             const data = await reportService.getAll(currentUser);
-            res.status(StatusCodesEnum.CREATED).json(data);
+            res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);
         }

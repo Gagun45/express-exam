@@ -31,4 +31,7 @@ export const validationFields = {
         name: Joi.string().trim(),
         relatedBrandId: JoiObjectId.required(),
     },
+    city: {
+        city: Joi.string().max(255).trim(),
+    },
 };
