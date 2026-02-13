@@ -26,6 +26,7 @@ export interface IAd extends IBase {
         originalCurrency: CurrencyEnum;
         originalPrice: number;
     };
+    views: number;
     status: AdStatusEnum;
     editAttempts: number;
 }

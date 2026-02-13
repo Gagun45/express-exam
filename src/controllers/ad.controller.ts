@@ -54,4 +54,14 @@ export const adController = {
             next(e);
         }
     },
+    viewPublicAd: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const adId = String(req.params["adId"]);
+            const ad = await adService.viewPublicAd(adId);
+            const publicAd = adPresenter.toPublicAd(ad);
+            res.status(StatusCodesEnum.OK).json(publicAd);
+        } catch (e) {
+            next(e);
+        }
+    },
 };

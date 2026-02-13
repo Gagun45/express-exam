@@ -58,6 +58,10 @@ const AdSchema = new Schema<IAd>(
             type: Number,
             default: 0,
         },
+        views: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true, versionKey: false },
 );

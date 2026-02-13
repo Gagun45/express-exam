@@ -1,3 +1,5 @@
+import { UpdateQuery } from "mongoose";
+
 import { MAX_EDIT_ATTEMPTS } from "../constants/constants.constants";
 import { AdStatusEnum } from "../enums/ad-status.enum";
 import { PermissionsEnum } from "../enums/permissions.enum";
@@ -60,6 +62,7 @@ export const adService = {
             creator: user._id,
             status,
             editAttempts: hasBadWords ? 1 : 0,
+            views: 0,
         });
         return {
             ad: newAd,
@@ -69,11 +72,24 @@ export const adService = {
         };
     },
     getAll: (): Promise<IAdPopulated[]> => adRepository.findAll(),
-    getById: async (adId: string): Promise<IAd> => {
-        const existingAd = await adRepository.findById(adId);
+    getPopulatedById: async (adId: string): Promise<IAdPopulated> => {
+        const existingAd = await adRepository.getOnePopulatedById(adId);
         if (!existingAd)
             throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
         return existingAd;
+    },
+    updateById: async (
+        adId: string,
+        params: UpdateQuery<IAd>,
+    ): Promise<IAd> => {
+        const updatedAd = await adRepository.updateById(adId, params);
+        if (!updatedAd)
+            throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
+        return updatedAd;
+    },
+    viewPublicAd: async (adId: string): Promise<IAdPopulated> => {
+        await adService.updateById(adId, { $inc: { views: 1 } });
+        return await adRepository.getOnePopulatedById(adId);
     },
     getMy: (user: IUser): Promise<IAdPopulated[]> =>
         adRepository.getManyByParams({ creator: user._id }),
@@ -82,8 +98,10 @@ export const adService = {
         description: string,
         user: IUser,
     ): Promise<{ ad: IAd; message: string }> => {
-        const existingAd = await adService.getById(adId);
-        if (!existingAd.creator.equals(user._id))
+        const existingAd = await adRepository.findById(adId);
+        if (!existingAd)
+            throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
+        if (!existingAd.creator._id.equals(user._id))
             throw new ApiError(
                 "You can only edit your own ads",
                 StatusCodesEnum.FORBIDDEN,
