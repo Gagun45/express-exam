@@ -7,11 +7,19 @@ import { ApiError } from "../errors/api.error";
 import { IUser } from "../interfaces/user.interface";
 
 export const roleHelper = {
-    assertRoleIsHigher: (
+    assertRoleIsHigherOrEqual: (
         requestRole: UserRolesEnum,
         targetRole: UserRolesEnum,
     ) => {
         if (RolePower[targetRole] >= RolePower[requestRole]) {
+            throw new ApiError("Role too high", StatusCodesEnum.FORBIDDEN);
+        }
+    },
+    assertRoleIsHigherStrictly: (
+        requestRole: UserRolesEnum,
+        targetRole: UserRolesEnum,
+    ) => {
+        if (RolePower[targetRole] > RolePower[requestRole]) {
             throw new ApiError("Role too high", StatusCodesEnum.FORBIDDEN);
         }
     },

@@ -32,4 +32,10 @@ export const carModelService = {
         await carBrandService.assertExistsById(brandId);
         return await carModelRepository.create(dto, brandId);
     },
+    getById: async (modelId: string): Promise<ICarModel> => {
+        const existingModel = await carModelRepository.findById(modelId);
+        if (!existingModel)
+            throw new ApiError("Model not found", StatusCodesEnum.NOT_FOUND);
+        return existingModel;
+    },
 };

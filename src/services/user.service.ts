@@ -31,7 +31,7 @@ export const userService = {
             targetUser._id,
         );
 
-        roleHelper.assertRoleIsHigher(currentUser.role, newRole);
+        roleHelper.assertRoleIsHigherStrictly(currentUser.role, newRole);
 
         if (newRole === UserRolesEnum.ADMIN) {
             throw new ApiError(
@@ -81,6 +81,8 @@ export const userService = {
 
         const targetUser = await userService.getById(targetUserId);
 
+        roleHelper.assertRoleIsHigherOrEqual(currentUser.role, targetUser.role);
+
         generalHelper.assertObjectIdsAreNotEqual(
             currentUser._id,
             targetUser._id,
@@ -105,6 +107,8 @@ export const userService = {
             currentUser._id,
             targetUser._id,
         );
+
+        roleHelper.assertRoleIsHigherOrEqual(currentUser.role, targetUser.role);
 
         roleHelper.assertUserIsNotAdmin(targetUser);
 

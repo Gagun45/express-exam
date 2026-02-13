@@ -4,4 +4,5 @@ export enum PermissionsEnum {
     CHANGE_ROLE = "changeRole",
     CHANGE_BAN_STATUS = "changeBanStatus",
     ADD_BRAND_AND_MODELS = "addBrandAndModels",
+    CREATE_AD = "createAd",
 }
