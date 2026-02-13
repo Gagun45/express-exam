@@ -2,6 +2,7 @@ import Joi from "joi";
 
 import { Regex } from "../constants/regex.constants";
 import { CurrencyEnum } from "../enums/currency.enum";
+import { ReportTypeEnum } from "../enums/report-type.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 
 const JoiObjectId = Joi.string().hex().length(24);
@@ -24,5 +25,10 @@ export const validationFields = {
         currency: Joi.string()
             .valid(...Object.values(CurrencyEnum))
             .required(),
+    },
+    report: {
+        type: Joi.string().valid(...Object.values(ReportTypeEnum)),
+        name: Joi.string().trim(),
+        relatedBrandId: JoiObjectId.required(),
     },
 };
