@@ -6,9 +6,9 @@ import { CarModel } from "../models/car-model.model";
 
 export const carModelRepository = {
     create: (dto: ICarModelCreateDto, brandId: string): Promise<ICarModel> =>
-        CarModel.create({ ...dto, brandId }),
+        CarModel.create({ ...dto, brand: brandId }),
     getAllByBrandId: (brandId: string): Promise<ICarModel[]> =>
-        CarModel.find({ brandId }),
+        CarModel.find({ brand: brandId }),
     findById: (modelId: string): Promise<ICarModel | null> =>
         CarModel.findById(modelId),
 };

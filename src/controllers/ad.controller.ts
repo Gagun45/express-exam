@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { IAdCreateDto } from "../interfaces/ad.interface";
+import { adPresenter } from "../presenters/ad.presenter";
 import { adService } from "../services/ad.service";
 
 export const adController = {
@@ -18,7 +19,8 @@ export const adController = {
     getAll: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const ads = await adService.getAll();
-            res.status(StatusCodesEnum.OK).json(ads);
+            const publicAds = adPresenter.toPublicAds(ads);
+            res.status(StatusCodesEnum.OK).json(publicAds);
         } catch (e) {
             next(e);
         }
@@ -27,7 +29,8 @@ export const adController = {
         try {
             const currentUser = res.locals.currentUser;
             const ads = await adService.getMy(currentUser);
-            res.status(StatusCodesEnum.OK).json(ads);
+            const publicAds = adPresenter.toPublicAds(ads);
+            res.status(StatusCodesEnum.OK).json(publicAds);
         } catch (e) {
             next(e);
         }

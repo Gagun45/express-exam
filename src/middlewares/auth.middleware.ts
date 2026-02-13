@@ -4,8 +4,8 @@ import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { TokenTypesEnum } from "../enums/token-types.enum";
 import { ApiError } from "../errors/api.error";
 import { getTokenFromHeader } from "../helpers/jwt.helper";
+import { userRepository } from "../repositories/user.repository";
 import { tokenService } from "../services/token.service";
-import { userService } from "../services/user.service";
 
 export const authMiddleware = {
     checkAccessToken: async (
@@ -21,7 +21,7 @@ export const authMiddleware = {
                 TokenTypesEnum.ACCESS,
             );
 
-            const user = await userService.findOneByParams({
+            const user = await userRepository.findOneByParams({
                 _id: tokenPayload.userId,
             });
             if (!user)

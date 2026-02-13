@@ -11,16 +11,16 @@ export const roleHelper = {
         requestRole: UserRolesEnum,
         targetRole: UserRolesEnum,
     ) => {
-        if (RolePower[targetRole] >= RolePower[requestRole]) {
-            throw new ApiError("Role too high", StatusCodesEnum.FORBIDDEN);
+        if (RolePower[targetRole] > RolePower[requestRole]) {
+            throw new ApiError("Not enough power", StatusCodesEnum.FORBIDDEN);
         }
     },
     assertRoleIsHigherStrictly: (
         requestRole: UserRolesEnum,
         targetRole: UserRolesEnum,
     ) => {
-        if (RolePower[targetRole] > RolePower[requestRole]) {
-            throw new ApiError("Role too high", StatusCodesEnum.FORBIDDEN);
+        if (RolePower[targetRole] >= RolePower[requestRole]) {
+            throw new ApiError("Not enough power", StatusCodesEnum.FORBIDDEN);
         }
     },
     assertUserIsNotAdmin: (user: IUser) => {

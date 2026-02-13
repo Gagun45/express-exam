@@ -7,7 +7,7 @@ import { ApiError } from "../errors/api.error";
 import { generalHelper } from "../helpers/general.helper";
 import { calculatePrices } from "../helpers/price.helper";
 import { roleHelper } from "../helpers/role.helper";
-import { IAd, IAdCreateDto } from "../interfaces/ad.interface";
+import { IAd, IAdCreateDto, IAdPopulated } from "../interfaces/ad.interface";
 import { IUser } from "../interfaces/user.interface";
 import { adRepository } from "../repositories/ad.repository";
 import { carBrandService } from "./car-brand.service";
@@ -26,7 +26,7 @@ export const adService = {
             const activeAdsCount = await adRepository.countByParams({
                 creator: user._id,
                 status: {
-                    $in: [AdStatusEnum.ACTIVE, AdStatusEnum.PENDING_EDIT],
+                    $in: [AdStatusEnum.ACTIVE, AdStatusEnum.PENDING],
                 },
             });
             if (activeAdsCount >= 1) {
@@ -40,13 +40,11 @@ export const adService = {
 
         const hasBadWords = generalHelper.containsBannedWords(dto.description);
 
-        const status = hasBadWords
-            ? AdStatusEnum.PENDING_EDIT
-            : AdStatusEnum.ACTIVE;
+        const status = hasBadWords ? AdStatusEnum.PENDING : AdStatusEnum.ACTIVE;
 
         await carBrandService.assertExistsById(dto.carBrand.toString());
         const carModel = await carModelService.getById(dto.carModel.toString());
-        if (!carModel.brandId.equals(dto.carBrand)) {
+        if (!carModel.brand.equals(dto.carBrand)) {
             throw new ApiError(
                 "Model does not belong to brand",
                 StatusCodesEnum.BAD_REQUEST,
@@ -66,14 +64,14 @@ export const adService = {
                 : "Ad has been created",
         };
     },
-    getAll: (): Promise<IAd[]> => adRepository.getAll(),
+    getAll: (): Promise<IAdPopulated[]> => adRepository.findAll(),
     getById: async (adId: string): Promise<IAd> => {
-        const existingAd = await adRepository.getById(adId);
+        const existingAd = await adRepository.findById(adId);
         if (!existingAd)
             throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
         return existingAd;
     },
-    getMy: (user: IUser): Promise<IAd[]> =>
+    getMy: (user: IUser): Promise<IAdPopulated[]> =>
         adRepository.getManyByParams({ creator: user._id }),
     editDescription: async (
         adId: string,
@@ -81,7 +79,7 @@ export const adService = {
         user: IUser,
     ): Promise<{ ad: IAd; message: string }> => {
         const existingAd = await adService.getById(adId);
-        if (!existingAd.creator._id.equals(user._id))
+        if (!existingAd.creator.equals(user._id))
             throw new ApiError(
                 "You can only edit your own ads",
                 StatusCodesEnum.FORBIDDEN,
@@ -125,7 +123,7 @@ export const adService = {
         //still under max attempts
         const updatedAd = await adRepository.updateById(adId, {
             description,
-            status: AdStatusEnum.PENDING_EDIT,
+            status: AdStatusEnum.PENDING,
             editAttempts: newAttempts,
         });
         return {

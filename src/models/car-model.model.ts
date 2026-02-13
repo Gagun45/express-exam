@@ -5,7 +5,7 @@ import { ICarModel } from "../interfaces/car-model.interface";
 const CarModelSchema = new Schema<ICarModel>(
     {
         model: { type: String, required: true },
-        brandId: { type: Types.ObjectId, ref: "CarBrand", required: true },
+        brand: { type: Types.ObjectId, ref: "CarBrand", required: true },
     },
     {
         versionKey: false,

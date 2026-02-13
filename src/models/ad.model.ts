@@ -47,7 +47,7 @@ const AdSchema = new Schema<IAd>(
             type: String,
             enum: Object.values(AdStatusEnum),
             required: true,
-            default: AdStatusEnum.PENDING_EDIT,
+            default: AdStatusEnum.PENDING,
         },
         editAttempts: {
             type: Number,

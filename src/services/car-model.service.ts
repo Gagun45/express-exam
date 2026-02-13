@@ -2,6 +2,7 @@ import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.error";
 import { roleHelper } from "../helpers/role.helper";
+import { ICarBrand } from "../interfaces/car-brand.interface";
 import {
     ICarModel,
     ICarModelCreateDto,
@@ -12,13 +13,19 @@ import { carModelRepository } from "../repositories/car-model.repository";
 import { carBrandService } from "./car-brand.service";
 
 export const carModelService = {
-    getAllByBrandId: async (brandId: string): Promise<ICarModel[]> => {
+    getAllByBrandId: async (
+        brandId: string,
+    ): Promise<{ models: ICarModel[]; brand: ICarBrand }> => {
         const existingBrand = await carBrandRepository.findOneByParams({
             _id: brandId,
         });
         if (!existingBrand)
             throw new ApiError("Brand doesnt exist", StatusCodesEnum.NOT_FOUND);
-        return await carModelRepository.getAllByBrandId(brandId);
+        const models = await carModelRepository.getAllByBrandId(brandId);
+        return {
+            brand: existingBrand,
+            models,
+        };
     },
     create: async (
         dto: ICarModelCreateDto,

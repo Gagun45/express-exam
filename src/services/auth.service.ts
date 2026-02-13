@@ -5,6 +5,7 @@ import { ApiError } from "../errors/api.error";
 import { IAuthCredentials, IAuthResponse } from "../interfaces/auth.interface";
 import { IUserCreateDto } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
+import { userRepository } from "../repositories/user.repository";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 import { userService } from "./user.service";
@@ -26,7 +27,7 @@ export const authService = {
         return { tokens, user: newUser };
     },
     signIn: async (dto: IAuthCredentials): Promise<IAuthResponse> => {
-        const user = await userService.findOneByParams({ email: dto.email });
+        const user = await userRepository.findOneByParams({ email: dto.email });
         if (!user)
             throw new ApiError(
                 "Invalid credentials",

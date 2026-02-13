@@ -1,6 +1,6 @@
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";
-import { IBase } from "./base.interface";
+import { IBase, PublicEntityType } from "./base.interface";
 
 export interface IUser extends IBase {
     email: string;
@@ -14,7 +14,7 @@ export type IUserCreateDto = Pick<IUser, "email" | "password">;
 export type IUserEntityCreateDto = IUserCreateDto &
     Partial<Pick<IUser, "role" | "accountType">>;
 
-export type IPublicUser = Pick<
+export type IPublicUser = PublicEntityType<
     IUser,
-    "accountType" | "email" | "role" | "isBanned" | "_id"
+    "accountType" | "email" | "role" | "isBanned"
 >;

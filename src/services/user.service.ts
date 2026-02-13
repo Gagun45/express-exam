@@ -70,11 +70,6 @@ export const userService = {
             throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
         return user;
     },
-    findOneByParams: async (
-        params: QueryFilter<IUser>,
-    ): Promise<IUser | null> => {
-        return await userRepository.findOneByParams(params);
-    },
     getById: async (userId: string): Promise<IUser> => {
         const user = await userRepository.findById(userId);
         if (!user)
@@ -94,11 +89,6 @@ export const userService = {
         const targetUser = await userService.getById(targetUserId);
 
         roleHelper.assertRoleIsHigherOrEqual(currentUser.role, targetUser.role);
-
-        generalHelper.assertUserObjectIdsAreNotEqual(
-            currentUser._id,
-            targetUser._id,
-        );
 
         roleHelper.assertUserIsNotAdmin(targetUser);
 
