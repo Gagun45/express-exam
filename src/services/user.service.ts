@@ -26,7 +26,7 @@ export const userService = {
 
         const targetUser = await userService.getById(targetUserId);
 
-        generalHelper.assertObjectIdsAreNotEqual(
+        generalHelper.assertUserObjectIdsAreNotEqual(
             currentUser._id,
             targetUser._id,
         );
@@ -83,7 +83,7 @@ export const userService = {
 
         roleHelper.assertRoleIsHigherOrEqual(currentUser.role, targetUser.role);
 
-        generalHelper.assertObjectIdsAreNotEqual(
+        generalHelper.assertUserObjectIdsAreNotEqual(
             currentUser._id,
             targetUser._id,
         );
@@ -103,7 +103,7 @@ export const userService = {
         );
         const targetUser = await userService.getById(targetUserId);
 
-        generalHelper.assertObjectIdsAreNotEqual(
+        generalHelper.assertUserObjectIdsAreNotEqual(
             currentUser._id,
             targetUser._id,
         );

@@ -32,4 +32,23 @@ export const adController = {
             next(e);
         }
     },
+    editDescription: async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        try {
+            const description = req.body.description as string;
+            const adId = String(req.params["adId"]);
+            const currentUser = res.locals.currentUser;
+            const updatedAd = await adService.editDescription(
+                adId,
+                description,
+                currentUser,
+            );
+            res.status(StatusCodesEnum.OK).json(updatedAd);
+        } catch (e) {
+            next(e);
+        }
+    },
 };

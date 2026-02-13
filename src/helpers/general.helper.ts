@@ -1,10 +1,11 @@
 import { Types } from "mongoose";
 
+import { BannedWords } from "../constants/banned-words.constants";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.error";
 
 export const generalHelper = {
-    assertObjectIdsAreNotEqual: (
+    assertUserObjectIdsAreNotEqual: (
         userId: Types.ObjectId,
         targetUserId: Types.ObjectId,
     ) => {
@@ -14,5 +15,9 @@ export const generalHelper = {
                 StatusCodesEnum.FORBIDDEN,
             );
         }
+    },
+    containsBannedWords: (text: string): boolean => {
+        const lowerText = text.toLowerCase();
+        return BannedWords.some((word) => lowerText.includes(word));
     },
 };

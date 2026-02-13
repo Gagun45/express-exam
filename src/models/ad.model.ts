@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 
+import { AdStatusEnum } from "../enums/ad-status.enum";
 import { CurrencyEnum } from "../enums/currency.enum";
 import { IAd } from "../interfaces/ad.interface";
 
@@ -19,7 +20,7 @@ const PriceSchema = new Schema(
     { _id: false },
 );
 
-const AdSchema = new Schema(
+const AdSchema = new Schema<IAd>(
     {
         description: { type: String, required: true },
 
@@ -42,6 +43,16 @@ const AdSchema = new Schema(
         },
 
         price: { type: PriceSchema, required: true },
+        status: {
+            type: String,
+            enum: Object.values(AdStatusEnum),
+            required: true,
+            default: AdStatusEnum.PENDING_EDIT,
+        },
+        editAttempts: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true, versionKey: false },
 );

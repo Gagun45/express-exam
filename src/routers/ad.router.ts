@@ -16,4 +16,11 @@ router.post(
     adController.create,
 );
 
+router.patch(
+    "/:adId/description",
+    authMiddleware.checkAccessToken,
+    commonMiddleware.isBodyValid(adValidator.editDescription),
+    adController.editDescription,
+);
+
 export const adRouter = router;

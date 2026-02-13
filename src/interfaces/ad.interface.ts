@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 
+import { AdStatusEnum } from "../enums/ad-status.enum";
 import { CurrencyEnum } from "../enums/currency.enum";
 import { IBase } from "./base.interface";
 
@@ -19,6 +20,8 @@ export interface IAd extends IBase {
         originalCurrency: CurrencyEnum;
         originalPrice: number;
     };
+    status: AdStatusEnum;
+    editAttempts: number;
 }
 
 export type IAdCreateDto = Pick<

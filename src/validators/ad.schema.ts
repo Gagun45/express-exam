@@ -10,4 +10,7 @@ export const adValidator = {
         price: validationFields.ad.price.required(),
         currency: validationFields.ad.currency.required(),
     }),
+    editDescription: Joi.object({
+        description: validationFields.ad.description.required(),
+    }),
 };
