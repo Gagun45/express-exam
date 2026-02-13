@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";
+import { IUserCreateDto } from "../interfaces/user.interface";
 import { userPresenter } from "../presenters/user.presenter";
 import { userService } from "../services/user.service";
 
@@ -71,5 +72,16 @@ export const userController = {
                 next(e);
             }
         };
+    },
+    addNewAdmin: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { currentUser } = res.locals;
+            const dto = req.body as IUserCreateDto;
+            const newUser = await userService.createAdmin(dto, currentUser);
+            const publicUser = userPresenter.toPublicUser(newUser);
+            res.status(StatusCodesEnum.OK).json(publicUser);
+        } catch (e) {
+            next(e);
+        }
     },
 };

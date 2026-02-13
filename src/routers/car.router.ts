@@ -17,12 +17,12 @@ router.post(
 );
 
 router.get(
-    "/brands/:brandId/models",
+    "/models/:brandId",
     commonMiddleware.isIdValid("brandId"),
     carModelController.getAllByBrandId,
 );
 router.post(
-    "/brands/:brandId/models",
+    "/models/:brandId",
     authMiddleware.checkAccessToken,
     commonMiddleware.isIdValid("brandId"),
     commonMiddleware.isBodyValid(carValidator.createModel),

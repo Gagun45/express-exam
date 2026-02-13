@@ -3,6 +3,7 @@ import { Router } from "express";
 import { userController } from "../controllers/user.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
+import { authValidator } from "../validators/auth.schema";
 import { userValidator } from "../validators/user.schema";
 
 const router = Router();
@@ -36,6 +37,13 @@ router.patch(
     commonMiddleware.isIdValid("userId"),
     authMiddleware.checkAccessToken,
     userController.banHandler(false),
+);
+
+router.post(
+    "/admin",
+    authMiddleware.checkAccessToken,
+    commonMiddleware.isBodyValid(authValidator.signUp),
+    userController.addNewAdmin,
 );
 
 export const userRouter = router;

@@ -14,6 +14,18 @@ export const userService = {
     create: (dto: IUserCreateDto): Promise<IUser> => {
         return userRepository.create(dto);
     },
+    createAdmin: async (dto: IUserCreateDto, user: IUser): Promise<IUser> => {
+        if (user.role !== UserRolesEnum.ADMIN) {
+            throw new ApiError("Forbidden", StatusCodesEnum.FORBIDDEN);
+        }
+        await userService.assertEmailIsUnique(dto.email);
+
+        return await userRepository.create({
+            ...dto,
+            accountType: UserAccountTypesEnum.PREMIUM,
+            role: UserRolesEnum.ADMIN,
+        });
+    },
     changeRole: async (
         targetUserId: string,
         currentUser: IUser,

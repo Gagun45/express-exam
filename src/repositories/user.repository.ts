@@ -1,10 +1,10 @@
 import { QueryFilter } from "mongoose";
 
-import { IUser, IUserCreateDto } from "../interfaces/user.interface";
+import { IUser, IUserEntityCreateDto } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
 export const userRepository = {
-    create: (dto: IUserCreateDto): Promise<IUser> => User.create(dto),
+    create: (dto: IUserEntityCreateDto): Promise<IUser> => User.create(dto),
     getAll: (): Promise<IUser[]> => User.find(),
 
     findOneByParams: (params: QueryFilter<IUser>): Promise<IUser> =>

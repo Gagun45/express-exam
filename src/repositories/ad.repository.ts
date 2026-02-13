@@ -1,11 +1,12 @@
 import { QueryFilter } from "mongoose";
 
+import { AdStatusEnum } from "../enums/ad-status.enum";
 import { IAd, IAdEntityCreateDto } from "../interfaces/ad.interface";
 import { Ad } from "../models/ad.model";
 
 export const adRepository = {
     create: (dto: IAdEntityCreateDto): Promise<IAd> => Ad.create(dto),
-    getAll: (): Promise<IAd[]> => Ad.find(),
+    getAll: (): Promise<IAd[]> => Ad.find({ status: AdStatusEnum.ACTIVE }),
     getById: (id: string): Promise<IAd | null> => Ad.findById(id),
     getManyByParams: (params: QueryFilter<IAd>): Promise<IAd[]> =>
         Ad.find(params),

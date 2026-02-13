@@ -11,8 +11,10 @@ export interface IUser extends IBase {
 }
 
 export type IUserCreateDto = Pick<IUser, "email" | "password">;
+export type IUserEntityCreateDto = IUserCreateDto &
+    Partial<Pick<IUser, "role" | "accountType">>;
 
 export type IPublicUser = Pick<
     IUser,
-    "accountType" | "email" | "role" | "isBanned"
-> & { id: string };
+    "accountType" | "email" | "role" | "isBanned" | "_id"
+>;
