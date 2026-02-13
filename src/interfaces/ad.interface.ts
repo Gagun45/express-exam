@@ -5,6 +5,7 @@ import { CurrencyEnum } from "../enums/currency.enum";
 import { IBase, PublicEntityType } from "./base.interface";
 import { ICarBrand } from "./car-brand.interface";
 import { ICarModel } from "./car-model.interface";
+import { ICity } from "./city.interface";
 import { IUser } from "./user.interface";
 
 export interface IAd extends IBase {
@@ -14,6 +15,8 @@ export interface IAd extends IBase {
     carModel: Types.ObjectId;
 
     creator: Types.ObjectId;
+
+    city: Types.ObjectId;
 
     price: {
         [CurrencyEnum.UAH]: number;
@@ -29,7 +32,7 @@ export interface IAd extends IBase {
 
 export type IAdCreateDto = Pick<
     IAd,
-    "description" | "carBrand" | "carModel"
+    "description" | "carBrand" | "carModel" | "city"
 > & {
     price: number;
     currency: CurrencyEnum;
@@ -39,11 +42,12 @@ export type IAdEntityCreateDto = Omit<IAd, keyof IBase>;
 
 export interface IAdPopulated extends Omit<
     IAd,
-    "carBrand" | "carModel" | "creator"
+    "carBrand" | "carModel" | "creator" | "city"
 > {
     carBrand: ICarBrand;
     carModel: ICarModel;
     creator: IUser;
+    city: ICity;
 }
 
 export interface IPublicAd extends PublicEntityType<
@@ -53,4 +57,5 @@ export interface IPublicAd extends PublicEntityType<
     creator: PublicEntityType<IUser, "email" | "role">;
     carModel: PublicEntityType<ICarModel, "model">;
     carBrand: PublicEntityType<ICarBrand, "brand">;
+    city: PublicEntityType<ICity, "city">;
 }

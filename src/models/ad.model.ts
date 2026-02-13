@@ -22,6 +22,11 @@ const PriceSchema = new Schema(
 
 const AdSchema = new Schema<IAd>(
     {
+        city: {
+            type: Schema.Types.ObjectId,
+            ref: "City",
+            required: true,
+        },
         description: { type: String, required: true },
 
         carBrand: {

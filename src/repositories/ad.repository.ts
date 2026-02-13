@@ -18,6 +18,7 @@ export const adRepository = {
             .populate("carBrand")
             .populate("carModel")
             .populate("creator")
+            .populate("city")
             .lean<IAdPopulated[]>(),
     findById: (id: string): Promise<IAd | null> => Ad.findById(id),
 
@@ -26,6 +27,7 @@ export const adRepository = {
             .populate("carBrand")
             .populate("carModel")
             .populate("creator")
+            .populate("city")
             .lean<IAdPopulated[]>(),
 
     updateById: (id: string, params: QueryFilter<IAd>): Promise<IAd> =>

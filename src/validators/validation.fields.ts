@@ -25,6 +25,7 @@ export const validationFields = {
         currency: Joi.string()
             .valid(...Object.values(CurrencyEnum))
             .required(),
+        city: JoiObjectId,
     },
     report: {
         type: Joi.string().valid(...Object.values(ReportTypeEnum)),

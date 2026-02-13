@@ -12,6 +12,7 @@ import { IUser } from "../interfaces/user.interface";
 import { adRepository } from "../repositories/ad.repository";
 import { carBrandService } from "./car-brand.service";
 import { carModelService } from "./car-model.service";
+import { cityService } from "./city.service";
 
 export const adService = {
     create: async (
@@ -36,6 +37,9 @@ export const adService = {
                 );
             }
         }
+
+        await cityService.assertExistsByParams({ _id: dto.city.toString() });
+
         const priceData = calculatePrices(dto.price, dto.currency);
 
         const hasBadWords = generalHelper.containsBannedWords(dto.description);

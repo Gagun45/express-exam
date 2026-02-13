@@ -9,6 +9,7 @@ export const adValidator = {
         carModel: validationFields.ad.carModel.required(),
         price: validationFields.ad.price.required(),
         currency: validationFields.ad.currency.required(),
+        city: validationFields.ad.city.required(),
     }),
     editDescription: Joi.object({
         description: validationFields.ad.description.required(),

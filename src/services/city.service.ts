@@ -1,3 +1,5 @@
+import { QueryFilter } from "mongoose";
+
 import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.error";
@@ -13,7 +15,7 @@ export const cityService = {
             PermissionsEnum.CREATE_CITY,
         );
 
-        const existingCity = await cityRepository.getOneByParams({
+        const existingCity = await cityRepository.findOneByParams({
             city: dto.city,
         });
 
@@ -22,5 +24,10 @@ export const cityService = {
 
         return await cityRepository.create(dto);
     },
-    getAll: (): Promise<ICity[]> => cityRepository.getAll(),
+    getAll: (): Promise<ICity[]> => cityRepository.findAll(),
+    assertExistsByParams: async (params: QueryFilter<ICity>): Promise<void> => {
+        const existingCity = await cityRepository.findOneByParams(params);
+        if (!existingCity)
+            throw new ApiError("City not found", StatusCodesEnum.NOT_FOUND);
+    },
 };

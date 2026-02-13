@@ -9,7 +9,7 @@ export const adController = {
     create: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = req.body as IAdCreateDto;
-            const currentUser = res.locals.currentUser;
+            const { currentUser } = res.locals;
             const newAd = await adService.create(dto, currentUser);
             res.status(StatusCodesEnum.CREATED).json(newAd);
         } catch (e) {

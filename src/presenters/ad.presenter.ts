@@ -20,6 +20,10 @@ export const adPresenter = {
                 id: entity.carModel._id.toString(),
                 model: entity.carModel.model,
             },
+            city: {
+                id: entity.city._id.toString(),
+                city: entity.city.city,
+            },
         };
     },
     toPublicAds: (entities: IAdPopulated[]): IPublicAd[] =>
