@@ -2,6 +2,7 @@ import { MAX_EDIT_ATTEMPTS } from "../constants/constants.constants";
 import { AdStatusEnum } from "../enums/ad-status.enum";
 import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { ApiError } from "../errors/api.error";
 import { generalHelper } from "../helpers/general.helper";
 import { calculatePrices } from "../helpers/price.helper";
@@ -21,6 +22,20 @@ export const adService = {
             user.role,
             PermissionsEnum.CREATE_AD,
         );
+        if (user.accountType === UserAccountTypesEnum.BASIC) {
+            const activeAdsCount = await adRepository.countByParams({
+                creator: user._id,
+                status: {
+                    $in: [AdStatusEnum.ACTIVE, AdStatusEnum.PENDING_EDIT],
+                },
+            });
+            if (activeAdsCount >= 1) {
+                throw new ApiError(
+                    "BASIC account can only have 1 active add. Upgdate to PREMIUM to post more",
+                    StatusCodesEnum.FORBIDDEN,
+                );
+            }
+        }
         const priceData = calculatePrices(dto.price, dto.currency);
 
         const hasBadWords = generalHelper.containsBannedWords(dto.description);
@@ -59,7 +74,7 @@ export const adService = {
         return existingAd;
     },
     getMy: (user: IUser): Promise<IAd[]> =>
-        adRepository.getByParams({ creator: user._id }),
+        adRepository.getManyByParams({ creator: user._id }),
     editDescription: async (
         adId: string,
         description: string,
