@@ -37,6 +37,15 @@ export const carModelService = {
             PermissionsEnum.ADD_BRAND_AND_MODELS,
         );
         await carBrandService.assertExistsById(brandId);
+        const existingModel = await carModelRepository.findOneByParams({
+            model: dto.model,
+            brand: brandId,
+        });
+        if (existingModel)
+            throw new ApiError(
+                "The brand already has the model",
+                StatusCodesEnum.CONFLICT,
+            );
         return await carModelRepository.create(dto, brandId);
     },
     getById: async (modelId: string): Promise<ICarModel> => {

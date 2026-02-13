@@ -7,7 +7,7 @@ import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { ApiError } from "../errors/api.error";
 import { generalHelper } from "../helpers/general.helper";
-import { calculatePrices } from "../helpers/price.helper";
+import { priceHelper } from "../helpers/price.helper";
 import { roleHelper } from "../helpers/role.helper";
 import { IAd, IAdCreateDto, IAdPopulated } from "../interfaces/ad.interface";
 import { IUser } from "../interfaces/user.interface";
@@ -20,7 +20,7 @@ export const adService = {
     create: async (
         dto: IAdCreateDto,
         user: IUser,
-    ): Promise<{ ad: IAd; message: string | null }> => {
+    ): Promise<{ ad: IAdPopulated; message: string | null }> => {
         roleHelper.assertRoleHasPermission(
             user.role,
             PermissionsEnum.CREATE_AD,
@@ -42,7 +42,7 @@ export const adService = {
 
         await cityService.assertExistsByParams({ _id: dto.city.toString() });
 
-        const priceData = calculatePrices(dto.price, dto.currency);
+        const priceData = priceHelper.calculatePrices(dto.price, dto.currency);
 
         const hasBadWords = generalHelper.containsBannedWords(dto.description);
 
@@ -64,16 +64,20 @@ export const adService = {
             editAttempts: hasBadWords ? 1 : 0,
             views: 0,
         });
+        const populatedNewAd = await adRepository.findOnePopulatedById(
+            newAd._id.toString(),
+        );
         return {
-            ad: newAd,
+            ad: populatedNewAd,
             message: hasBadWords
                 ? "Your desc contains suspicious words and needs editing"
                 : "Ad has been created",
         };
     },
-    getAll: (): Promise<IAdPopulated[]> => adRepository.findAll(),
-    getPopulatedById: async (adId: string): Promise<IAdPopulated> => {
-        const existingAd = await adRepository.getOnePopulatedById(adId);
+    getAll: (): Promise<IAdPopulated[]> =>
+        adRepository.findManyPopulated({ status: AdStatusEnum.ACTIVE }),
+    getOnePopulatedById: async (adId: string): Promise<IAdPopulated> => {
+        const existingAd = await adRepository.findOnePopulatedById(adId);
         if (!existingAd)
             throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
         return existingAd;
@@ -82,23 +86,23 @@ export const adService = {
         adId: string,
         params: UpdateQuery<IAd>,
     ): Promise<IAd> => {
-        const updatedAd = await adRepository.updateById(adId, params);
+        const updatedAd = await adRepository.updateOneById(adId, params);
         if (!updatedAd)
             throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
         return updatedAd;
     },
     viewPublicAd: async (adId: string): Promise<IAdPopulated> => {
         await adService.updateById(adId, { $inc: { views: 1 } });
-        return await adRepository.getOnePopulatedById(adId);
+        return await adRepository.findOnePopulatedById(adId);
     },
     getMy: (user: IUser): Promise<IAdPopulated[]> =>
-        adRepository.getManyByParams({ creator: user._id }),
+        adRepository.findManyPopulated({ creator: user._id }),
     editDescription: async (
         adId: string,
         description: string,
         user: IUser,
-    ): Promise<{ ad: IAd; message: string }> => {
-        const existingAd = await adRepository.findById(adId);
+    ): Promise<{ ad: IAdPopulated; message: string }> => {
+        const existingAd = await adRepository.findOneById(adId);
         if (!existingAd)
             throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
         if (!existingAd.creator._id.equals(user._id))
@@ -113,13 +117,14 @@ export const adService = {
 
         // approved
         if (!hasBadWords) {
-            const updatedAd = await adRepository.updateById(adId, {
+            await adRepository.updateOneById(adId, {
                 description,
                 status: AdStatusEnum.ACTIVE,
                 editAttempts: 0,
             });
+            const ad = await adRepository.findOnePopulatedById(adId);
             return {
-                ad: updatedAd,
+                ad,
                 message: "Description approved, status: active",
             };
         }
@@ -130,26 +135,28 @@ export const adService = {
         //max attempts reached
         if (newAttempts >= MAX_EDIT_ATTEMPTS) {
             // TODO Notify manager
-            const updatedAd = await adRepository.updateById(adId, {
+            await adRepository.updateOneById(adId, {
                 description,
                 status: AdStatusEnum.INACTIVE,
                 editAttempts: newAttempts,
             });
+            const ad = await adRepository.findOnePopulatedById(adId);
             return {
-                ad: updatedAd,
+                ad,
                 message:
                     "Maximum edit attempts reached, we will notify manager, status: inactive",
             };
         }
 
         //still under max attempts
-        const updatedAd = await adRepository.updateById(adId, {
+        await adRepository.updateOneById(adId, {
             description,
             status: AdStatusEnum.PENDING,
             editAttempts: newAttempts,
         });
+        const ad = await adRepository.findOnePopulatedById(adId);
         return {
-            ad: updatedAd,
+            ad,
             message: `Description contains prohibited words. Attempt ${newAttempts}/${MAX_EDIT_ATTEMPTS}`,
         };
     },

@@ -10,8 +10,9 @@ export const adController = {
         try {
             const dto = req.body as IAdCreateDto;
             const { currentUser } = res.locals;
-            const newAd = await adService.create(dto, currentUser);
-            res.status(StatusCodesEnum.CREATED).json(newAd);
+            const data = await adService.create(dto, currentUser);
+            const publicAd = adPresenter.toPublicAd(data.ad);
+            res.status(StatusCodesEnum.CREATED).json({ ...data, ad: publicAd });
         } catch (e) {
             next(e);
         }
@@ -44,12 +45,13 @@ export const adController = {
             const description = req.body.description as string;
             const adId = String(req.params["adId"]);
             const currentUser = res.locals.currentUser;
-            const updatedAd = await adService.editDescription(
+            const data = await adService.editDescription(
                 adId,
                 description,
                 currentUser,
             );
-            res.status(StatusCodesEnum.OK).json(updatedAd);
+            const publicAd = adPresenter.toPublicAd(data.ad);
+            res.status(StatusCodesEnum.OK).json({ ...data, ad: publicAd });
         } catch (e) {
             next(e);
         }

@@ -4,7 +4,7 @@ import { carBrandController } from "../controllers/car-brand.controller";
 import { carModelController } from "../controllers/car-model.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
-import { carValidator } from "../validators/car-brand.schema";
+import { VALIDATORS } from "../validators/validators";
 
 const router = Router();
 
@@ -12,7 +12,7 @@ router.get("/brands", carBrandController.getAll);
 router.post(
     "/brands",
     authMiddleware.checkAccessToken,
-    commonMiddleware.isBodyValid(carValidator.createBrand),
+    commonMiddleware.isBodyValid(VALIDATORS.car.createBrand),
     carBrandController.create,
 );
 
@@ -25,7 +25,7 @@ router.post(
     "/models/:brandId",
     authMiddleware.checkAccessToken,
     commonMiddleware.isIdValid("brandId"),
-    commonMiddleware.isBodyValid(carValidator.createModel),
+    commonMiddleware.isBodyValid(VALIDATORS.car.createModel),
     carModelController.create,
 );
 

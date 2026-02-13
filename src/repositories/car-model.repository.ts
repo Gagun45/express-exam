@@ -1,3 +1,5 @@
+import { QueryFilter } from "mongoose";
+
 import {
     ICarModel,
     ICarModelCreateDto,
@@ -11,4 +13,7 @@ export const carModelRepository = {
         CarModel.find({ brand: brandId }),
     findById: (modelId: string): Promise<ICarModel | null> =>
         CarModel.findById(modelId),
+    findOneByParams: (
+        params: QueryFilter<ICarModel>,
+    ): Promise<ICarModel | null> => CarModel.findOne(params),
 };

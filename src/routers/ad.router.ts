@@ -3,7 +3,7 @@ import { Router } from "express";
 import { adController } from "../controllers/ad.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
-import { adValidator } from "../validators/ad.schema";
+import { VALIDATORS } from "../validators/validators";
 
 const adId = "adId";
 
@@ -19,14 +19,14 @@ router.get(
 router.post(
     "/",
     authMiddleware.checkAccessToken,
-    commonMiddleware.isBodyValid(adValidator.create),
+    commonMiddleware.isBodyValid(VALIDATORS.ad.create),
     adController.create,
 );
 
 router.patch(
     `/:${adId}/description`,
     authMiddleware.checkAccessToken,
-    commonMiddleware.isBodyValid(adValidator.editDescription),
+    commonMiddleware.isBodyValid(VALIDATORS.ad.editDescription),
     adController.editDescription,
 );
 

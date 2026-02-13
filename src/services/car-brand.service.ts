@@ -30,7 +30,7 @@ export const carBrandService = {
         if (existingBrand)
             throw new ApiError(
                 "Brand with the same name already exists",
-                StatusCodesEnum.BAD_REQUEST,
+                StatusCodesEnum.CONFLICT,
             );
         return await carBrandRepository.create(dto);
     },
