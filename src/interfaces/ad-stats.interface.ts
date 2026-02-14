@@ -1,5 +1,3 @@
-import { CurrencyEnum } from "../enums/currency.enum";
-
 export interface IAdViewsStatsParams {
     adId: string;
     lastDay: Date;
@@ -14,18 +12,10 @@ export interface IAdViewsStats {
     totalViewsLastMonth: number;
 }
 
-export interface IAvgPrice {
-    [CurrencyEnum.UAH]: number;
-    [CurrencyEnum.USD]: number;
-    [CurrencyEnum.EUR]: number;
-}
-
-export interface IAvgPriceStats {
-    averagePriceByCity: IAvgPrice;
-    averagePriceOverall: IAvgPrice;
-}
-
 export interface IAdStats {
     views: IAdViewsStats;
-    price: IAvgPriceStats;
+    price: {
+        averagePriceInUahByCity: number;
+        averagePriceInUahOverall: number;
+    };
 }

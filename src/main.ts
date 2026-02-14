@@ -3,6 +3,7 @@ import dns from "node:dns";
 import express, { NextFunction, Request, Response } from "express";
 
 import { config } from "./configs/config";
+import { cronRunner } from "./crons";
 import { dbConnection } from "./db/db-connect";
 import { ApiError } from "./errors/api.error";
 import { apiRouter } from "./routers/api.router";
@@ -30,6 +31,7 @@ process.on("uncaughtException", (err) => {
 const start = async () => {
     try {
         await dbConnection();
+        cronRunner();
         app.listen(config.PORT, () => {
             console.log(`Server running on ${config.PORT}`);
         });

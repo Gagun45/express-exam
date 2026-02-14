@@ -1,3 +1,4 @@
+import { priceHelper } from "../helpers/price.helper";
 import { IAdPopulated, IPublicAd } from "../interfaces/ad.interface";
 
 export const adPresenter = {
@@ -10,7 +11,10 @@ export const adPresenter = {
                 email: entity.creator.email,
                 role: entity.creator.role,
             },
-            price: entity.price,
+            price: priceHelper.calculatePriceInfo(
+                entity.price,
+                entity.currency,
+            ),
             status: entity.status,
             carBrand: {
                 id: entity.carBrand._id.toString(),

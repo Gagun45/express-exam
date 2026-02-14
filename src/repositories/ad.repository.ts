@@ -1,21 +1,12 @@
-import { QueryFilter, Types, UpdateQuery, UpdateResult } from "mongoose";
+import { QueryFilter, UpdateQuery, UpdateResult } from "mongoose";
 
-import { AdStatusEnum } from "../enums/ad-status.enum";
-import { CurrencyEnum } from "../enums/currency.enum";
 import { adHelper } from "../helpers/ad.helper";
-import {
-    IAd,
-    IAdEntityCreateDto,
-    IAdPopulated,
-} from "../interfaces/ad.interface";
-import { IAvgPrice } from "../interfaces/ad-stats.interface";
+import { IAd, IAdCreateDto, IAdPopulated } from "../interfaces/ad.interface";
 import { Ad } from "../models/ad.model";
 
 export const adRepository = {
-    create: async (dto: IAdEntityCreateDto): Promise<IAd> => {
-        const createdAd = await Ad.create(dto);
-        return await Ad.findById(createdAd._id);
-    },
+    create: (dto: IAdCreateDto, creatorId: string): Promise<IAd> =>
+        Ad.create({ ...dto, creator: creatorId }),
 
     findOnePopulatedById: (id: string): Promise<IAdPopulated | null> =>
         adHelper.populateAdQuery(Ad.findById(id)).lean<IAdPopulated>(),
@@ -41,35 +32,4 @@ export const adRepository = {
     ): Promise<UpdateResult> => Ad.updateMany(filter, params),
     countByParams: (params: QueryFilter<IAd>): Promise<number> =>
         Ad.countDocuments(params),
-    getAvgPriceByCarModelByCityId: async (
-        carModelId: string,
-        cityId?: string,
-    ): Promise<IAvgPrice> => {
-        const match: QueryFilter<IAd> = {
-            status: AdStatusEnum.ACTIVE,
-            carModel: new Types.ObjectId(carModelId),
-        };
-        if (cityId) {
-            match.city = new Types.ObjectId(cityId);
-        }
-        const [result] = await Ad.aggregate<IAvgPrice>([
-            {
-                $match: match,
-            },
-            {
-                $group: {
-                    _id: null,
-                    [CurrencyEnum.UAH]: { $avg: `$price.${CurrencyEnum.UAH}` },
-                    [CurrencyEnum.USD]: { $avg: `$price.${CurrencyEnum.USD}` },
-                    [CurrencyEnum.EUR]: { $avg: `$price.${CurrencyEnum.EUR}` },
-                },
-            },
-            {
-                $project: {
-                    _id: 0,
-                },
-            },
-        ]);
-        return result;
-    },
 };

@@ -20,4 +20,8 @@ export const generalHelper = {
         const lowerText = text.toLowerCase();
         return BannedWords.some((word) => lowerText.includes(word));
     },
+    roundNumber: (amount: number, decimals = 2): number => {
+        const factor = 10 ** decimals;
+        return Math.round(amount * factor) / factor;
+    },
 };

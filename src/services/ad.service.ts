@@ -1,6 +1,7 @@
 import { QueryFilter, UpdateQuery } from "mongoose";
 
 import { MAX_EDIT_ATTEMPTS } from "../constants/constants.constants";
+import { ExchangeRates } from "../constants/exchange-rates.constants";
 import { AdStatusEnum } from "../enums/ad-status.enum";
 import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
@@ -8,7 +9,6 @@ import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { ApiError } from "../errors/api.error";
 import { dateHelper } from "../helpers/date.helper";
 import { generalHelper } from "../helpers/general.helper";
-import { priceHelper } from "../helpers/price.helper";
 import { roleHelper } from "../helpers/role.helper";
 import { IAd, IAdCreateDto, IAdPopulated } from "../interfaces/ad.interface";
 import { IAdStats } from "../interfaces/ad-stats.interface";
@@ -20,10 +20,7 @@ import { carModelService } from "./car-model.service";
 import { cityService } from "./city.service";
 
 export const adService = {
-    create: async (
-        dto: IAdCreateDto,
-        user: IUser,
-    ): Promise<{ ad: IAdPopulated; message: string | null }> => {
+    create: async (dto: IAdCreateDto, user: IUser): Promise<IAdPopulated> => {
         roleHelper.assertRoleHasPermission(
             user.role,
             PermissionsEnum.CREATE_AD,
@@ -43,13 +40,15 @@ export const adService = {
 
         await cityService.assertExistsByParams({ _id: dto.city.toString() });
 
-        const priceData = priceHelper.calculatePrices(dto.price, dto.currency);
+        const containsBannedWords = generalHelper.containsBannedWords(
+            dto.description,
+        );
 
-        const hasBadWords = generalHelper.containsBannedWords(dto.description);
-
-        const status = hasBadWords
-            ? AdStatusEnum.INACTIVE
-            : AdStatusEnum.ACTIVE;
+        if (containsBannedWords)
+            throw new ApiError(
+                "Your ad`s description contains bad words, ad wasnt created, try again",
+                StatusCodesEnum.BAD_REQUEST,
+            );
 
         await carBrandService.assertExistsById(dto.carBrand.toString());
         const carModel = await carModelService.getById(dto.carModel.toString());
@@ -59,23 +58,11 @@ export const adService = {
                 StatusCodesEnum.BAD_REQUEST,
             );
         }
-        const newAd = await adRepository.create({
-            ...dto,
-            price: priceData,
-            creator: user._id,
-            status,
-            editAttempts: hasBadWords ? 1 : 0,
-            views: 0,
-        });
+        const newAd = await adRepository.create(dto, user._id.toString());
         const populatedNewAd = await adRepository.findOnePopulatedById(
             newAd._id.toString(),
         );
-        return {
-            ad: populatedNewAd,
-            message: hasBadWords
-                ? "Your desc contains suspicious words and needs editing"
-                : "Ad has been created",
-        };
+        return populatedNewAd;
     },
     updateMany: (filter: QueryFilter<IAd>, params: UpdateQuery<IAd>) => {
         return adRepository.updateMany(filter, params);
@@ -169,6 +156,14 @@ export const adService = {
         const ad = await adRepository.findOnePopulatedById(adId);
         return ad;
     },
+    getAdsAvgPrice: async (params: QueryFilter<IAd>) => {
+        const ads = await adRepository.findMany(params);
+        const totalPrice = ads.reduce((acc, ad) => {
+            const priceInUah = ad.price * ExchangeRates[ad.currency];
+            return acc + priceInUah;
+        }, 0);
+        return generalHelper.roundNumber(totalPrice / ads.length);
+    },
     getAdStats: async (
         adId: string,
         user: IUser,
@@ -202,23 +197,24 @@ export const adService = {
             lastMonth,
         });
 
-        const averagePriceByCity =
-            await adRepository.getAvgPriceByCarModelByCityId(
-                existingAd.carModel._id.toString(),
-                existingAd.city._id.toString(),
-            );
-        const averagePriceOverall =
-            await adRepository.getAvgPriceByCarModelByCityId(
-                existingAd.carModel._id.toString(),
-            );
+        const averagePriceInUahByCity = await adService.getAdsAvgPrice({
+            status: AdStatusEnum.ACTIVE,
+            carModel: existingAd.carModel._id,
+            city: existingAd.city._id,
+        });
+
+        const averagePriceInUahOverall = await adService.getAdsAvgPrice({
+            status: AdStatusEnum.ACTIVE,
+            carModel: existingAd.carModel._id,
+        });
 
         return {
             ad: existingAd,
             stats: {
                 views: viewStats,
                 price: {
-                    averagePriceByCity,
-                    averagePriceOverall,
+                    averagePriceInUahByCity,
+                    averagePriceInUahOverall,
                 },
             },
         };

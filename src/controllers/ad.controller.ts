@@ -10,9 +10,9 @@ export const adController = {
         try {
             const dto = req.body as IAdCreateDto;
             const { currentUser } = res.locals;
-            const data = await adService.create(dto, currentUser);
-            const publicAd = adPresenter.toPublicAd(data.ad);
-            res.status(StatusCodesEnum.CREATED).json({ ...data, ad: publicAd });
+            const populatedNewAd = await adService.create(dto, currentUser);
+            const publicAd = adPresenter.toPublicAd(populatedNewAd);
+            res.status(StatusCodesEnum.CREATED).json(publicAd);
         } catch (e) {
             next(e);
         }

@@ -1,10 +1,8 @@
 import { CurrencyEnum } from "../enums/currency.enum";
 
-export interface IPrice {
-    [CurrencyEnum.UAH]: number;
-    [CurrencyEnum.USD]: number;
-    [CurrencyEnum.EUR]: number;
-
-    originalCurrency: CurrencyEnum;
+export interface IPriceInfo {
     originalPrice: number;
+    originalCurrency: CurrencyEnum;
+    convertedPrices: Record<CurrencyEnum, number>;
+    exchangeRates: Record<CurrencyEnum, number>;
 }

@@ -4,22 +4,6 @@ import { AdStatusEnum } from "../enums/ad-status.enum";
 import { CurrencyEnum } from "../enums/currency.enum";
 import { IAd } from "../interfaces/ad.interface";
 
-const PriceSchema = new Schema(
-    {
-        [CurrencyEnum.UAH]: { type: Number, required: true },
-        [CurrencyEnum.USD]: { type: Number, required: true },
-        [CurrencyEnum.EUR]: { type: Number, required: true },
-
-        originalCurrency: {
-            type: String,
-            enum: Object.values(CurrencyEnum),
-            required: true,
-        },
-        originalPrice: { type: Number, required: true },
-    },
-    { _id: false },
-);
-
 const AdSchema = new Schema<IAd>(
     {
         city: {
@@ -47,10 +31,19 @@ const AdSchema = new Schema<IAd>(
             required: true,
         },
 
-        price: { type: PriceSchema, required: true },
+        currency: {
+            type: String,
+            enum: Object.values(CurrencyEnum),
+            required: true,
+        },
+        price: {
+            type: Number,
+            required: true,
+        },
         status: {
             type: String,
             enum: Object.values(AdStatusEnum),
+            default: AdStatusEnum.ACTIVE,
             required: true,
         },
         editAttempts: {
