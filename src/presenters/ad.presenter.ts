@@ -24,6 +24,7 @@ export const adPresenter = {
                 id: entity.city._id.toString(),
                 city: entity.city.city,
             },
+            createdAt: entity.createdAt.toISOString(),
         };
     },
     toPublicAds: (entities: IAdPopulated[]): IPublicAd[] =>

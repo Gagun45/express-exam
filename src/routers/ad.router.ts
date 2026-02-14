@@ -16,6 +16,12 @@ router.get(
     commonMiddleware.isIdValid(adId),
     adController.viewPublicAd,
 );
+router.get(
+    `/:${adId}/stats`,
+    authMiddleware.checkAccessToken,
+    commonMiddleware.isIdValid(adId),
+    adController.getAdStats,
+);
 router.post(
     "/",
     authMiddleware.checkAccessToken,

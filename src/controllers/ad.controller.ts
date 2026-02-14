@@ -45,13 +45,13 @@ export const adController = {
             const description = req.body.description as string;
             const adId = String(req.params["adId"]);
             const currentUser = res.locals.currentUser;
-            const data = await adService.editDescription(
+            const ad = await adService.editDescription(
                 adId,
                 description,
                 currentUser,
             );
-            const publicAd = adPresenter.toPublicAd(data.ad);
-            res.status(StatusCodesEnum.OK).json({ ...data, ad: publicAd });
+            const publicAd = adPresenter.toPublicAd(ad);
+            res.status(StatusCodesEnum.OK).json(publicAd);
         } catch (e) {
             next(e);
         }
@@ -62,6 +62,17 @@ export const adController = {
             const ad = await adService.viewPublicAd(adId);
             const publicAd = adPresenter.toPublicAd(ad);
             res.status(StatusCodesEnum.OK).json(publicAd);
+        } catch (e) {
+            next(e);
+        }
+    },
+    getAdStats: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const adId = String(req.params["adId"]);
+            const { currentUser } = res.locals;
+            const data = await adService.getAdStats(adId, currentUser);
+            const publicAd = adPresenter.toPublicAd(data.ad);
+            res.status(StatusCodesEnum.OK).json({ ...data, ad: publicAd });
         } catch (e) {
             next(e);
         }

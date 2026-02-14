@@ -59,4 +59,5 @@ export interface IPublicAd extends PublicEntityType<
     carModel: PublicEntityType<ICarModel, "model">;
     carBrand: PublicEntityType<ICarBrand, "brand">;
     city: PublicEntityType<ICity, "city">;
+    createdAt: string;
 }
