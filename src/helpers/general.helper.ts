@@ -21,7 +21,6 @@ export const generalHelper = {
         return BannedWords.some((word) => lowerText.includes(word));
     },
     roundNumber: (amount: number, decimals = 2): number => {
-        const factor = 10 ** decimals;
-        return Math.round(amount * factor) / factor;
+        return Number(amount.toFixed(decimals));
     },
 };

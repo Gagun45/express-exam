@@ -52,4 +52,13 @@ export const authController = {
             next(e);
         }
     },
+    refresh: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const refreshToken = req.body.refreshToken as string;
+            const data = await authService.refresh(refreshToken);
+            res.status(StatusCodesEnum.OK).json({ tokens: data });
+        } catch (e) {
+            next(e);
+        }
+    },
 };

@@ -8,6 +8,7 @@ export const userPresenter = {
             isBanned: entity.isBanned,
             id: entity._id.toString(),
             role: entity.role,
+            name: entity.name,
         };
     },
 };

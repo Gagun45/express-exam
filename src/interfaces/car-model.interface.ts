@@ -10,4 +10,6 @@ export interface ICarModel {
 
 export type ICarModelCreateDto = Pick<ICarModel, "model">;
 
-export type IPubicCarModel = PublicEntityType<ICarModel, "model">;
+export type IPubicCarModel = PublicEntityType<ICarModel, "model"> & {
+    brand: string;
+};

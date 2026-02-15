@@ -15,10 +15,10 @@ import { tokenRepository } from "../repositories/token.repository";
 export const tokenService = {
     generateTokens: (payload: ITokenPayload): ITokenPair => {
         const accessToken = jwt.sign(payload, config.JWT_ACCESS_SECRET, {
-            expiresIn: "20m",
+            expiresIn: config.JWT_ACCESS_LIFETIME,
         });
         const refreshToken = jwt.sign(payload, config.JWT_REFRESH_SECRET, {
-            expiresIn: "20m",
+            expiresIn: config.JWT_REFRESH_LIFETIME,
         });
         return { accessToken, refreshToken };
     },

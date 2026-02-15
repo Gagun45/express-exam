@@ -1,8 +1,10 @@
 import { Types } from "mongoose";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
+import { TokenTypesEnum } from "../enums/token-types.enum";
 import { ApiError } from "../errors/api.error";
 import { IAuthCredentials, IAuthResponse } from "../interfaces/auth.interface";
+import { ITokenPair } from "../interfaces/token.interface";
 import { IUserCreateDto } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
@@ -53,5 +55,35 @@ export const authService = {
             user: new Types.ObjectId(_id),
         });
         return { tokens, user };
+    },
+    refresh: async (refreshToken: string): Promise<ITokenPair> => {
+        const tokenPayload = tokenService.verifyToken(
+            refreshToken,
+            TokenTypesEnum.REFRESH,
+        );
+        const existingToken = await tokenRepository.findOneByParams({
+            refreshToken,
+        });
+        if (!existingToken) {
+            throw new ApiError(
+                "Refresh token not found",
+                StatusCodesEnum.UNAUTHORIZED,
+            );
+        }
+        await tokenRepository.deleteOneByParams({
+            refreshToken,
+        });
+
+        const tokenPair = tokenService.generateTokens({
+            accountType: tokenPayload.accountType,
+            role: tokenPayload.role,
+            userId: tokenPayload.userId,
+        });
+        await tokenRepository.create({
+            refreshToken: tokenPair.refreshToken,
+            user: new Types.ObjectId(tokenPayload.userId),
+        });
+
+        return tokenPair;
     },
 };

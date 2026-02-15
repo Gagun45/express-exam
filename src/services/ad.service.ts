@@ -3,9 +3,11 @@ import { QueryFilter, UpdateQuery } from "mongoose";
 import { MAX_EDIT_ATTEMPTS } from "../constants/constants.constants";
 import { ExchangeRates } from "../constants/exchange-rates.constants";
 import { AdStatusEnum } from "../enums/ad-status.enum";
+import { EmailTypeEnum } from "../enums/email-type.enum";
 import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
+import { UserRolesEnum } from "../enums/user-roles.enum";
 import { ApiError } from "../errors/api.error";
 import { dateHelper } from "../helpers/date.helper";
 import { generalHelper } from "../helpers/general.helper";
@@ -14,10 +16,12 @@ import { IAd, IAdCreateDto, IAdPopulated } from "../interfaces/ad.interface";
 import { IAdStats } from "../interfaces/ad-stats.interface";
 import { IUser } from "../interfaces/user.interface";
 import { adRepository } from "../repositories/ad.repository";
+import { userRepository } from "../repositories/user.repository";
 import { viewRepository } from "../repositories/view.repository";
 import { carBrandService } from "./car-brand.service";
 import { carModelService } from "./car-model.service";
 import { cityService } from "./city.service";
+import { emailService } from "./email.service";
 
 export const adService = {
     create: async (dto: IAdCreateDto, user: IUser): Promise<IAdPopulated> => {
@@ -135,6 +139,25 @@ export const adService = {
             });
             if (newAttempts >= MAX_EDIT_ATTEMPTS) {
                 // TODO Notify manager
+                const managers = await userRepository.findManyByParams({
+                    role: UserRolesEnum.MANAGER,
+                    isBanned: false,
+                });
+                if (managers.length) {
+                    await Promise.all(
+                        managers.map((manager) =>
+                            emailService.sendEmail(
+                                EmailTypeEnum.DESCRIPTION_EDIT_FAILED,
+                                manager.email,
+                                {
+                                    adId: existingAd._id.toString(),
+                                    description,
+                                    userEmail: user.email,
+                                },
+                            ),
+                        ),
+                    );
+                }
                 await adRepository.updateOneById(adId, {
                     status: AdStatusEnum.INACTIVE,
                 });

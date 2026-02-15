@@ -15,10 +15,9 @@ export const priceHelper = {
         // Convert amount to all currencies
         Object.values(CurrencyEnum).forEach((targetCurrency) => {
             const amountInUah = amount * ExchangeRates[currency];
-            convertedPrices[targetCurrency] =
-                Math.round(
-                    (amountInUah / ExchangeRates[targetCurrency]) * 100,
-                ) / 100;
+            convertedPrices[targetCurrency] = generalHelper.roundNumber(
+                amountInUah / ExchangeRates[targetCurrency],
+            );
         });
 
         return {
@@ -28,13 +27,8 @@ export const priceHelper = {
             exchangeRates: { ...ExchangeRates },
         };
     },
-    fetchExchangeRates: async (
-        retries = 5,
-        delayMs = 1000,
-    ): Promise<Record<CurrencyEnum, number>> => {
-        const fallbackRates: Record<CurrencyEnum, number> = {
-            ...ExchangeRates,
-        };
+    fetchExchangeRates: async (): Promise<void> => {
+        const retries = 3;
 
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
@@ -65,21 +59,25 @@ export const priceHelper = {
                             parseFloat(item.buy),
                         );
                 });
-
-                return rates; // success
+                console.log(
+                    "New rates from privatbank api successfully fetched: ",
+                    rates,
+                );
+                Object.assign(ExchangeRates, rates);
+                break;
             } catch (error) {
                 console.warn(`Attempt ${attempt} failed: ${error}`);
                 if (attempt < retries) {
-                    await new Promise((res) => setTimeout(res, delayMs));
+                    console.log("Retrying in 10 seconds...");
+                    await new Promise((res) => setTimeout(res, 10000));
                 } else {
                     console.error(
-                        "All attempts failed. Using last known rates.",
+                        "All attempts failed. Using last known rates: ",
+                        ExchangeRates,
                     );
-                    return fallbackRates;
                 }
             }
         }
-
-        return fallbackRates;
+        console.log("Next update: at midnight");
     },
 };

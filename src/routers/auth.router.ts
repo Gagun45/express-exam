@@ -17,6 +17,11 @@ router.post(
     commonMiddleware.isBodyValid(VALIDATORS.auth.signIn),
     authController.signIn,
 );
+router.post(
+    "/refresh",
+    commonMiddleware.isBodyValid(VALIDATORS.auth.refreshToken),
+    authController.refresh,
+);
 router.post("/logout", authController.logout);
 router.get("/me", authMiddleware.checkAccessToken, authController.me);
 

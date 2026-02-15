@@ -3,6 +3,7 @@ import { UserRolesEnum } from "../enums/user-roles.enum";
 import { IBase, PublicEntityType } from "./base.interface";
 
 export interface IUser extends IBase {
+    name: string;
     email: string;
     password: string;
     role: UserRolesEnum;
@@ -10,11 +11,11 @@ export interface IUser extends IBase {
     isBanned: boolean;
 }
 
-export type IUserCreateDto = Pick<IUser, "email" | "password">;
+export type IUserCreateDto = Pick<IUser, "email" | "password" | "name">;
 export type IUserEntityCreateDto = IUserCreateDto &
     Partial<Pick<IUser, "role" | "accountType">>;
 
 export type IPublicUser = PublicEntityType<
     IUser,
-    "accountType" | "email" | "role" | "isBanned"
+    "accountType" | "email" | "role" | "isBanned" | "name"
 >;

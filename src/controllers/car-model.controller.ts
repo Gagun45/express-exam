@@ -37,7 +37,8 @@ export const carModelController = {
                 brandId,
                 currentUser,
             );
-            res.status(StatusCodesEnum.CREATED).json(newModel);
+            const publicModel = carModelPresenter.toPublicCarModel(newModel);
+            res.status(StatusCodesEnum.CREATED).json(publicModel);
         } catch (e) {
             next(e);
         }

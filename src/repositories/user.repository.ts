@@ -9,6 +9,8 @@ export const userRepository = {
 
     findOneByParams: (params: QueryFilter<IUser>): Promise<IUser> =>
         User.findOne(params),
+    findManyByParams: (params: QueryFilter<IUser>): Promise<IUser[]> =>
+        User.find(params),
 
     findById: (userId: string): Promise<IUser | null> => User.findById(userId),
 

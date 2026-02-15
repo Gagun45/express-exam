@@ -5,6 +5,7 @@ export const carModelPresenter = {
         return {
             id: entity._id.toString(),
             model: entity.model,
+            brand: entity.brand.toString(),
         };
     },
     toPublicCarModels: (entities: ICarModel[]): IPubicCarModel[] =>
