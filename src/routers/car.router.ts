@@ -6,6 +6,8 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
 import { VALIDATORS } from "../validators/validators";
 
+const brandId = "brandId";
+
 const router = Router();
 
 router.get("/brands", carBrandController.getAll);
@@ -17,14 +19,14 @@ router.post(
 );
 
 router.get(
-    "/models/:brandId",
-    commonMiddleware.isIdValid("brandId"),
+    `/models/:${brandId}`,
+    commonMiddleware.isIdValid(brandId),
     carModelController.getAllByBrandId,
 );
 router.post(
-    "/models/:brandId",
+    `/models/:${brandId}`,
     authMiddleware.checkAccessToken,
-    commonMiddleware.isIdValid("brandId"),
+    commonMiddleware.isIdValid(brandId),
     commonMiddleware.isBodyValid(VALIDATORS.car.createModel),
     carModelController.create,
 );

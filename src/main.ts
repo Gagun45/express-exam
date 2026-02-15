@@ -6,7 +6,7 @@ import { config } from "./configs/config";
 import { cronRunner } from "./crons";
 import { dbConnection } from "./db/db-connect";
 import { ApiError } from "./errors/api.error";
-// import { priceHelper } from "./helpers/price.helper";
+import { priceHelper } from "./helpers/price.helper";
 import { apiRouter } from "./routers/api.router";
 
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
@@ -32,7 +32,7 @@ process.on("uncaughtException", (err) => {
 const start = async () => {
     try {
         await dbConnection();
-        // await priceHelper.fetchExchangeRates();
+        await priceHelper.fetchExchangeRates();
         cronRunner();
         app.listen(config.PORT, () => {
             console.log(`Server running on ${config.PORT}`);

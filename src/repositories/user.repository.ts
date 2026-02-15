@@ -1,4 +1,4 @@
-import { QueryFilter } from "mongoose";
+import { QueryFilter, UpdateQuery } from "mongoose";
 
 import { IUser, IUserEntityCreateDto } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
@@ -16,7 +16,7 @@ export const userRepository = {
 
     updateById: (
         userId: string,
-        params: QueryFilter<IUser>,
+        params: UpdateQuery<IUser>,
     ): Promise<IUser | null> =>
         User.findByIdAndUpdate(userId, params, { returnDocument: "after" }),
 };
