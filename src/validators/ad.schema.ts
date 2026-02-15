@@ -14,4 +14,8 @@ export const adValidator = {
     editDescription: Joi.object({
         description: validationFields.ad.description.required(),
     }),
+    query: Joi.object({
+        page: validationFields.query.page,
+        limit: validationFields.query.limit,
+    }),
 };

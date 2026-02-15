@@ -6,4 +6,4 @@ const handler = async () => {
     await priceHelper.fetchExchangeRates();
 };
 
-export const exchangeRatesCronJon = new CronJob("0 0 * * * *", handler);
+export const exchangeRatesCronJon = new CronJob("0 0 0 * * *", handler);

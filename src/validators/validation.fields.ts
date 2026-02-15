@@ -11,6 +11,10 @@ export const validationFields = {
     tokens: {
         token: Joi.string().min(1).trim(),
     },
+    query: {
+        page: Joi.number().min(1).default(1),
+        limit: Joi.number().min(1).max(25).default(5),
+    },
     user: {
         email: Joi.string().email().trim(),
         password: Joi.string().regex(Regex.PASSWORD),

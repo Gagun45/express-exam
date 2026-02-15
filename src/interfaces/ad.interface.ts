@@ -56,3 +56,8 @@ export interface IPublicAd extends PublicEntityType<
     createdAt: string;
     price: IPriceInfo;
 }
+
+export interface IAdQuery {
+    page: number;
+    limit: number;
+}

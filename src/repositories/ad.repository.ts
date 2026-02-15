@@ -1,7 +1,12 @@
 import { QueryFilter, UpdateQuery, UpdateResult } from "mongoose";
 
 import { adHelper } from "../helpers/ad.helper";
-import { IAd, IAdCreateDto, IAdPopulated } from "../interfaces/ad.interface";
+import {
+    IAd,
+    IAdCreateDto,
+    IAdPopulated,
+    IAdQuery,
+} from "../interfaces/ad.interface";
 import { Ad } from "../models/ad.model";
 
 export const adRepository = {
@@ -15,9 +20,18 @@ export const adRepository = {
     ): Promise<IAdPopulated | null> =>
         adHelper.populateAdQuery(Ad.findOne(params)).lean<IAdPopulated>(),
 
-    findManyPopulated: (params: QueryFilter<IAd>): Promise<IAdPopulated[]> =>
-        adHelper.populateAdQuery(Ad.find(params)).lean<IAdPopulated[]>(),
-
+    findManyPopulated: (
+        params: QueryFilter<IAd>,
+        query: IAdQuery,
+    ): Promise<[IAdPopulated[], number]> => {
+        const { limit, skip } = adHelper.createQuery(query);
+        return Promise.all([
+            adHelper
+                .populateAdQuery(Ad.find(params).limit(limit).skip(skip))
+                .lean<IAdPopulated[]>(),
+            Ad.countDocuments(params),
+        ]);
+    },
     findMany: (params: QueryFilter<IAd>): Promise<IAd[]> => Ad.find(params),
     findOneById: (id: string): Promise<IAd | null> => Ad.findById(id),
 

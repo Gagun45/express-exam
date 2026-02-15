@@ -9,11 +9,18 @@ import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";
 import { ApiError } from "../errors/api.error";
+import { adHelper } from "../helpers/ad.helper";
 import { dateHelper } from "../helpers/date.helper";
 import { generalHelper } from "../helpers/general.helper";
 import { roleHelper } from "../helpers/role.helper";
-import { IAd, IAdCreateDto, IAdPopulated } from "../interfaces/ad.interface";
+import {
+    IAd,
+    IAdCreateDto,
+    IAdPopulated,
+    IAdQuery,
+} from "../interfaces/ad.interface";
 import { IAdStats } from "../interfaces/ad-stats.interface";
+import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
 import { IUser } from "../interfaces/user.interface";
 import { adRepository } from "../repositories/ad.repository";
 import { userRepository } from "../repositories/user.repository";
@@ -71,10 +78,16 @@ export const adService = {
     updateMany: (filter: QueryFilter<IAd>, params: UpdateQuery<IAd>) => {
         return adRepository.updateMany(filter, params);
     },
-    getAll: (): Promise<IAdPopulated[]> => {
-        return adRepository.findManyPopulated({
-            status: AdStatusEnum.ACTIVE,
-        });
+    getAll: async (
+        query: IAdQuery,
+    ): Promise<IPaginatedResponse<IAdPopulated>> => {
+        const [ads, totalItems] = await adRepository.findManyPopulated(
+            {
+                status: AdStatusEnum.ACTIVE,
+            },
+            query,
+        );
+        return adHelper.toIPaginatedResponse(query, ads, totalItems);
     },
     getOnePopulatedById: async (adId: string): Promise<IAdPopulated> => {
         const existingAd = await adRepository.findOnePopulatedById(adId);
@@ -108,8 +121,16 @@ export const adService = {
         await adService.incrementAdView(adId);
         return await adRepository.findOnePopulatedById(adId);
     },
-    getMy: (user: IUser): Promise<IAdPopulated[]> =>
-        adRepository.findManyPopulated({ creator: user._id }),
+    getMy: async (
+        user: IUser,
+        query: IAdQuery,
+    ): Promise<IPaginatedResponse<IAdPopulated>> => {
+        const [ads, totalItems] = await adRepository.findManyPopulated(
+            { creator: user._id },
+            query,
+        );
+        return adHelper.toIPaginatedResponse(query, ads, totalItems);
+    },
     editDescription: async (
         adId: string,
         description: string,

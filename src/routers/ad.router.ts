@@ -9,8 +9,17 @@ const adId = "adId";
 
 const router = Router();
 
-router.get("/", adController.getAll);
-router.get("/my", authMiddleware.checkAccessToken, adController.getMy);
+router.get(
+    "/",
+    commonMiddleware.isQueryValid(VALIDATORS.ad.query),
+    adController.getAll,
+);
+router.get(
+    "/my",
+    authMiddleware.checkAccessToken,
+    commonMiddleware.isQueryValid(VALIDATORS.ad.query),
+    adController.getMy,
+);
 router.get(
     `/:${adId}`,
     commonMiddleware.isIdValid(adId),

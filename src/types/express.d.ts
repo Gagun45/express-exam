@@ -5,6 +5,7 @@ declare global {
         interface Locals {
             currentUserId: string;
             currentUser: IUser;
+            validatedQuery: any;
         }
     }
 }

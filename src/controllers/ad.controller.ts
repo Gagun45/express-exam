@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
-import { IAdCreateDto } from "../interfaces/ad.interface";
+import { IAdCreateDto, IAdQuery } from "../interfaces/ad.interface";
 import { adPresenter } from "../presenters/ad.presenter";
 import { adService } from "../services/ad.service";
 
@@ -19,9 +19,10 @@ export const adController = {
     },
     getAll: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const ads = await adService.getAll();
-            const publicAds = adPresenter.toPublicAds(ads);
-            res.status(StatusCodesEnum.OK).json(publicAds);
+            const validatedQuery = res.locals.validatedQuery as IAdQuery;
+            const { data, meta } = await adService.getAll(validatedQuery);
+            const publicAds = adPresenter.toPublicAds(data);
+            res.status(StatusCodesEnum.OK).json({ data: publicAds, meta });
         } catch (e) {
             next(e);
         }
@@ -29,9 +30,14 @@ export const adController = {
     getMy: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const currentUser = res.locals.currentUser;
-            const ads = await adService.getMy(currentUser);
-            const publicAds = adPresenter.toPublicAds(ads);
-            res.status(StatusCodesEnum.OK).json(publicAds);
+            const validatedQuery = res.locals.validatedQuery as IAdQuery;
+
+            const { data, meta } = await adService.getMy(
+                currentUser,
+                validatedQuery,
+            );
+            const publicAds = adPresenter.toPublicAds(data);
+            res.status(StatusCodesEnum.OK).json({ data: publicAds, meta });
         } catch (e) {
             next(e);
         }

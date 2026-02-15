@@ -35,4 +35,23 @@ export const commonMiddleware = {
             }
         };
     },
+    isQueryValid: (validator: ObjectSchema) => {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const validatedQuery = await validator.validateAsync(
+                    req.query,
+                    {
+                        stripUnknown: true,
+                    },
+                );
+                res.locals.validatedQuery = { ...validatedQuery };
+                next();
+            } catch (e) {
+                const message =
+                    e.details?.map((d: any) => d.message).join(", ") ||
+                    "Invalid query";
+                next(new ApiError(message, StatusCodesEnum.BAD_REQUEST));
+            }
+        };
+    },
 };
