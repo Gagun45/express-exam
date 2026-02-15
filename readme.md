@@ -19,3 +19,30 @@ The application provides authentication, role-based access control, ad managemen
 - 📊 **Filtering & pagination**
 - 🛑 **User banning system**
 - 🐳 **Dockerized environment**
+  https://github.com/Gagun45/express-exam.git
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/Gagun45/express-exam.git
+cd express-exam
+
+```
+
+### 2️⃣ Environment Variables
+
+The .env file is provided separately for security reasons.
+
+Download the environment configuration file and place it in the root directory of the project.
+
+### 3️⃣ Run with Docker
+
+Make sure Docker is installed and running.
+
+```bash
+docker compose up --build
+```
+
+The API will be available at: http://localhost:5555
