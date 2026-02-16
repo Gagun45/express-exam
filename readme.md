@@ -14,7 +14,7 @@ The application provides authentication, role-based access control, ad managemen
 - 💎 **Account types** (Basic / Premium)
 - 🚘 **Car brand & model management**
 - 📢 **Advertisement creation & moderation**
-- 👁 **View tracking**
+- 👁 **View tracking** (views counter increments on each visit to `/ads/:adId`)
 - 💱 **Multi-currency pricing** (UAH, USD, EUR)
 - 📊 **Pagination**
 - 🛑 **User banning system**
