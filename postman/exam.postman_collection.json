@@ -1,0 +1,988 @@
+{
+  "info": {
+    "_postman_id": "024e43c3-9f81-47f5-9ed2-5fb927b9d4da",
+    "name": "exam",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45195437",
+    "_collection_link": "https://go.postman.co/collection/45195437-024e43c3-9f81-47f5-9ed2-5fb927b9d4da?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "sign-up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json()\r",
+                  "pm.environment.set('accessToken', res.tokens.accessToken);\r",
+                  "pm.environment.set('refreshToken', res.tokens.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"seller3@qwe.com\",\r\n    \"password\": \"P@ssword1\",\r\n    \"name\": \"Mykola\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/auth/sign-up",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "auth",
+                "sign-up"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "sign-in",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json()\r",
+                  "pm.environment.set('accessToken', res.tokens.accessToken);\r",
+                  "pm.environment.set('refreshToken', res.tokens.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"seller3@qwe.com\",\r\n    \"password\": \"P@ssword1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/auth/sign-in",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "auth",
+                "sign-in"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.environment.set(\"accessToken\", \"\");\r",
+                  "pm.environment.set(\"refreshToken\", \"\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/auth/logout",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json()\r",
+                  "pm.environment.set('accessToken', res.tokens.accessToken);\r",
+                  "pm.environment.set('refreshToken', res.tokens.refreshToken);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/auth/refresh",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "me",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/auth/me",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "acc-type",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"accountType\": \"premium\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/users/:userId/account-type",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users",
+                ":userId",
+                "account-type"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "6991dbddb4f7b54e3fbdc2a9"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change role",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"role\": \"seller\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/users/:userId/change-role",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users",
+                ":userId",
+                "change-role"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "6991dbddb4f7b54e3fbdc2a9"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ban",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/users/:userId/ban",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users",
+                ":userId",
+                "ban"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "6991d7f48d7c2f5981f48e7f"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "unban",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/users/:userId/unban",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users",
+                ":userId",
+                "unban"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "698db98da3d55db6d12673bd"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAll",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"qwe@qwe.com\",\r\n    \"password\": \"maxmax\"\r\n}"
+            },
+            "url": {
+              "raw": "{{HOST}}/users",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add admin",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"admin3@qwe.com\",\r\n    \"password\":\"P@assword1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/users/admin",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "cars",
+      "item": [
+        {
+          "name": "brands",
+          "item": [
+            {
+              "name": "get brands",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/cars/brands",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "cars",
+                    "brands"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "add brand",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"brand\": \"Skoda\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/cars/brands",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "cars",
+                    "brands"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "models",
+          "item": [
+            {
+              "name": "get models",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/cars/models/:brandId",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "cars",
+                    "models",
+                    ":brandId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "brandId",
+                      "value": "6991d990d0fa0b15cf77f93b"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "add model",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{accessToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"model\": \"Kodiaq\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/cars/models/:brandId",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "cars",
+                    "models",
+                    ":brandId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "brandId",
+                      "value": "6991d990d0fa0b15cf77f93b"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ads",
+      "item": [
+        {
+          "name": "get ads",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/ads",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "ads"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add ad",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"price\": 200000,\r\n    \"currency\": \"EUR\",\r\n    \"carBrand\": \"6991d990d0fa0b15cf77f93b\",\r\n    \"carModel\": \"6991da3b0d838f5cb709a388\",\r\n    \"description\": \"New ad description\",\r\n    \"city\": \"698f75e075954f72796085e9\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/ads",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "ads"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "my ads",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/ads/my",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "ads",
+                "my"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "edit desc",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"description\": \"banned\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/ads/:adId/description",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "ads",
+                ":adId",
+                "description"
+              ],
+              "variable": [
+                {
+                  "key": "adId",
+                  "value": "6991d1dc5dd28b00fcc11e37"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "view ad",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/ads/:adId",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "ads",
+                ":adId"
+              ],
+              "variable": [
+                {
+                  "key": "adId",
+                  "value": "6991dd69b4f7b54e3fbdc2f1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get stats",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/ads/:adId/stats",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "ads",
+                ":adId",
+                "stats"
+              ],
+              "variable": [
+                {
+                  "key": "adId",
+                  "value": "6991dd69b4f7b54e3fbdc2f1"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "report",
+      "item": [
+        {
+          "name": "brand report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"mercedes\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/reports/brand",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "reports",
+                "brand"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "model report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"2\",\r\n    \"relatedBrandId\": \"698e16c7e5e959ce37c5da48\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/reports/model",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "reports",
+                "model"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get reports",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/reports",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "reports"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "cities",
+      "item": [
+        {
+          "name": "get cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/cities",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "cities"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add city",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"city\": \"Mukachevo\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/cities",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "cities"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
