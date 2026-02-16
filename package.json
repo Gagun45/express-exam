@@ -5,9 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "rimraf dist && tsc-watch --onSuccess \"npm run watch:server\"",
-        "watch:server": "tsx src/main.ts --watch",
-        "docker-up": "docker compose up",
-        "docker-up-build": "docker compose up --build"
+        "watch:server": "tsx src/main.ts --watch"
     },
     "keywords": [],
     "author": "",
