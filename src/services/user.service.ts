@@ -59,10 +59,7 @@ export const userService = {
     assertEmailIsUnique: async (email: string): Promise<void> => {
         const user = await userRepository.findOneByParams({ email });
         if (user)
-            throw new ApiError(
-                "Email already taken",
-                StatusCodesEnum.BAD_REQUEST,
-            );
+            throw new ApiError("Email already taken", StatusCodesEnum.CONFLICT);
     },
     getOneByParams: async (params: QueryFilter<IUser>): Promise<IUser> => {
         const user = await userRepository.findOneByParams(params);
