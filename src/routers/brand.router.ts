@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { cityController } from "../controllers/city.controller";
+import { carBrandController } from "../controllers/car-brand.controller";
 import { PermissionsEnum } from "../enums/permissions.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
@@ -9,13 +9,13 @@ import { VALIDATORS } from "../validators/validators";
 
 const router = Router();
 
-router.get("/", cityController.getAll);
+router.get("/", carBrandController.getAll);
 router.post(
     "/",
     authMiddleware.checkAccessToken,
-    commonMiddleware.isBodyValid(VALIDATORS.city.create),
-    permissionMiddleware.hasPermission(PermissionsEnum.CREATE_CITY),
-    cityController.create,
+    commonMiddleware.isBodyValid(VALIDATORS.car.createBrand),
+    permissionMiddleware.hasPermission(PermissionsEnum.CREATE_BRAND_AND_MODEL),
+    carBrandController.create,
 );
 
-export const cityRouter = router;
+export const brandRouter = router;

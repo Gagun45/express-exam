@@ -8,7 +8,7 @@ export const rolePermissions: Record<UserRolesEnum, PermissionsEnum[]> = {
         PermissionsEnum.CHANGE_ACCOUNT_TYPE,
         PermissionsEnum.CHANGE_ROLE,
         PermissionsEnum.CHANGE_BAN_STATUS,
-        PermissionsEnum.ADD_BRAND_AND_MODELS,
+        PermissionsEnum.CREATE_BRAND_AND_MODEL,
         PermissionsEnum.CREATE_AD,
         PermissionsEnum.VIEW_REPORTS,
         PermissionsEnum.CREATE_CITY,

@@ -4,7 +4,6 @@ import { MAX_EDIT_ATTEMPTS } from "../constants/constants.constants";
 import { ExchangeRates } from "../constants/exchange-rates.constants";
 import { AdStatusEnum } from "../enums/ad-status.enum";
 import { EmailTypeEnum } from "../enums/email-type.enum";
-import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";
@@ -12,7 +11,6 @@ import { ApiError } from "../errors/api.error";
 import { adHelper } from "../helpers/ad.helper";
 import { dateHelper } from "../helpers/date.helper";
 import { generalHelper } from "../helpers/general.helper";
-import { roleHelper } from "../helpers/role.helper";
 import {
     IAd,
     IAdCreateDto,
@@ -32,10 +30,6 @@ import { emailService } from "./email.service";
 
 export const adService = {
     create: async (dto: IAdCreateDto, user: IUser): Promise<IAdPopulated> => {
-        roleHelper.assertRoleHasPermission(
-            user.role,
-            PermissionsEnum.CREATE_AD,
-        );
         if (user.accountType === UserAccountTypesEnum.BASIC) {
             const activeAdsCount = await adRepository.countByParams({
                 creator: user._id,
@@ -212,12 +206,6 @@ export const adService = {
         adId: string,
         user: IUser,
     ): Promise<{ ad: IAdPopulated; stats: IAdStats }> => {
-        if (user.accountType === UserAccountTypesEnum.BASIC)
-            throw new ApiError(
-                "Only premium users are allowed",
-                StatusCodesEnum.FORBIDDEN,
-            );
-
         const existingAd = await adService.getOnePopulatedById(adId);
         if (!existingAd.creator._id.equals(user._id))
             throw new ApiError(

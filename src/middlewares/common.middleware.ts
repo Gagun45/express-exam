@@ -4,6 +4,7 @@ import { isObjectIdOrHexString } from "mongoose";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.error";
+import { userService } from "../services/user.service";
 
 export const commonMiddleware = {
     isIdValid: (key: string) => {
@@ -51,6 +52,18 @@ export const commonMiddleware = {
                     e.details?.map((d: any) => d.message).join(", ") ||
                     "Invalid query";
                 next(new ApiError(message, StatusCodesEnum.BAD_REQUEST));
+            }
+        };
+    },
+    loadTargetUser: (key: string) => {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const targetUserId = String(req.params[key]);
+                const targetUser = await userService.getById(targetUserId);
+                res.locals.targetUser = targetUser;
+                next();
+            } catch (e) {
+                next(e);
             }
         };
     },

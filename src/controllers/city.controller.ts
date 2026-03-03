@@ -18,8 +18,7 @@ export const cityController = {
     create: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = req.body as ICityCreateDto;
-            const { currentUser } = res.locals;
-            const city = await cityService.create(dto, currentUser);
+            const city = await cityService.create(dto);
             const publicCity = cityPresenter.toPublicCity(city);
             res.status(StatusCodesEnum.CREATED).json(publicCity);
         } catch (e) {

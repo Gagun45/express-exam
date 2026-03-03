@@ -1,8 +1,10 @@
 import { Router } from "express";
 
 import { adController } from "../controllers/ad.controller";
+import { PermissionsEnum } from "../enums/permissions.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
+import { permissionMiddleware } from "../middlewares/permission.middleware";
 import { VALIDATORS } from "../validators/validators";
 
 const adId = "adId";
@@ -29,12 +31,14 @@ router.get(
     `/:${adId}/stats`,
     authMiddleware.checkAccessToken,
     commonMiddleware.isIdValid(adId),
+    permissionMiddleware.isPremium,
     adController.getAdStats,
 );
 router.post(
     "/",
     authMiddleware.checkAccessToken,
     commonMiddleware.isBodyValid(VALIDATORS.ad.create),
+    permissionMiddleware.hasPermission(PermissionsEnum.CREATE_AD),
     adController.create,
 );
 

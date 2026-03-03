@@ -1,34 +1,28 @@
 import { Router } from "express";
 
-import { carBrandController } from "../controllers/car-brand.controller";
 import { carModelController } from "../controllers/car-model.controller";
+import { PermissionsEnum } from "../enums/permissions.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
+import { permissionMiddleware } from "../middlewares/permission.middleware";
 import { VALIDATORS } from "../validators/validators";
 
 const brandId = "brandId";
 
 const router = Router();
 
-router.get("/brands", carBrandController.getAll);
-router.post(
-    "/brands",
-    authMiddleware.checkAccessToken,
-    commonMiddleware.isBodyValid(VALIDATORS.car.createBrand),
-    carBrandController.create,
-);
-
 router.get(
-    `/models/:${brandId}`,
+    `/:${brandId}`,
     commonMiddleware.isIdValid(brandId),
     carModelController.getAllByBrandId,
 );
 router.post(
-    `/models/:${brandId}`,
+    `/:${brandId}`,
     authMiddleware.checkAccessToken,
     commonMiddleware.isIdValid(brandId),
     commonMiddleware.isBodyValid(VALIDATORS.car.createModel),
+    permissionMiddleware.hasPermission(PermissionsEnum.CREATE_BRAND_AND_MODEL),
     carModelController.create,
 );
 
-export const carRouter = router;
+export const modelRouter = router;

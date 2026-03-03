@@ -31,12 +31,7 @@ export const carModelController = {
         try {
             const dto = req.body as ICarModelCreateDto;
             const brandId = String(req.params["brandId"]);
-            const currentUser = res.locals.currentUser;
-            const newModel = await carModelService.create(
-                dto,
-                brandId,
-                currentUser,
-            );
+            const newModel = await carModelService.create(dto, brandId);
             const publicModel = carModelPresenter.toPublicCarModel(newModel);
             res.status(StatusCodesEnum.CREATED).json(publicModel);
         } catch (e) {

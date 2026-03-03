@@ -20,8 +20,7 @@ export const reportController = {
 
     getAll: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { currentUser } = res.locals;
-            const data = await reportService.getAll(currentUser);
+            const data = await reportService.getAll();
             res.status(StatusCodesEnum.OK).json(data);
         } catch (e) {
             next(e);

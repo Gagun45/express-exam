@@ -18,8 +18,7 @@ export const carBrandController = {
     create: async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = req.body as ICarBrandCreateDto;
-            const currentUser = res.locals.currentUser;
-            const newBrand = await carBrandService.create(dto, currentUser);
+            const newBrand = await carBrandService.create(dto);
             const publicBrand = carBrandPresenter.toPublicCarBrand(newBrand);
             res.status(StatusCodesEnum.CREATED).json(publicBrand);
         } catch (e) {

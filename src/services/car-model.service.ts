@@ -1,13 +1,10 @@
-import { PermissionsEnum } from "../enums/permissions.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { ApiError } from "../errors/api.error";
-import { roleHelper } from "../helpers/role.helper";
 import { ICarBrand } from "../interfaces/car-brand.interface";
 import {
     ICarModel,
     ICarModelCreateDto,
 } from "../interfaces/car-model.interface";
-import { IUser } from "../interfaces/user.interface";
 import { carBrandRepository } from "../repositories/car-brand.repository";
 import { carModelRepository } from "../repositories/car-model.repository";
 import { carBrandService } from "./car-brand.service";
@@ -30,12 +27,7 @@ export const carModelService = {
     create: async (
         dto: ICarModelCreateDto,
         brandId: string,
-        user: IUser,
     ): Promise<ICarModel> => {
-        roleHelper.assertRoleHasPermission(
-            user.role,
-            PermissionsEnum.ADD_BRAND_AND_MODELS,
-        );
         await carBrandService.assertExistsById(brandId);
         const existingModel = await carModelRepository.findOneByParams({
             model: dto.model,

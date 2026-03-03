@@ -7,6 +7,11 @@ import { ApiError } from "../errors/api.error";
 import { IUser } from "../interfaces/user.interface";
 
 export const roleHelper = {
+    assertIsAdmin: (role: UserRolesEnum) => {
+        if (role !== UserRolesEnum.ADMIN) {
+            throw new ApiError("Forbidden", StatusCodesEnum.FORBIDDEN);
+        }
+    },
     assertRoleIsHigherOrEqual: (
         requestRole: UserRolesEnum,
         targetRole: UserRolesEnum,

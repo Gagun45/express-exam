@@ -1,8 +1,10 @@
 import { Router } from "express";
 
 import { userController } from "../controllers/user.controller";
+import { PermissionsEnum } from "../enums/permissions.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
+import { permissionMiddleware } from "../middlewares/permission.middleware";
 import { VALIDATORS } from "../validators/validators";
 
 const userId = "userId";
@@ -15,6 +17,10 @@ router.patch(
     commonMiddleware.isIdValid(userId),
     commonMiddleware.isBodyValid(VALIDATORS.user.changeAccountType),
     authMiddleware.checkAccessToken,
+    commonMiddleware.loadTargetUser(userId),
+    permissionMiddleware.hasPermission(PermissionsEnum.CHANGE_ACCOUNT_TYPE),
+    permissionMiddleware.assertRoleIsHigherOrEqual,
+    permissionMiddleware.assertTargetIsNotAdmin,
     userController.changeAccountType,
 );
 
@@ -23,27 +29,31 @@ router.patch(
     commonMiddleware.isIdValid(userId),
     commonMiddleware.isBodyValid(VALIDATORS.user.changeRole),
     authMiddleware.checkAccessToken,
+    commonMiddleware.loadTargetUser(userId),
+    permissionMiddleware.hasPermission(PermissionsEnum.CHANGE_ROLE),
+    permissionMiddleware.preventSelfAction,
+    permissionMiddleware.assertRoleIsHigherStrictly,
     userController.changeRole,
 );
 
 router.patch(
-    `/:${userId}/ban`,
+    `/:${userId}/change-ban-status`,
     commonMiddleware.isIdValid(userId),
+    commonMiddleware.isBodyValid(VALIDATORS.user.changeBanStatus),
     authMiddleware.checkAccessToken,
-    userController.banHandler(true),
-);
-
-router.patch(
-    `/:${userId}/unban`,
-    commonMiddleware.isIdValid(userId),
-    authMiddleware.checkAccessToken,
-    userController.banHandler(false),
+    commonMiddleware.loadTargetUser(userId),
+    permissionMiddleware.hasPermission(PermissionsEnum.CHANGE_BAN_STATUS),
+    permissionMiddleware.preventSelfAction,
+    permissionMiddleware.assertRoleIsHigherOrEqual,
+    permissionMiddleware.assertTargetIsNotAdmin,
+    userController.changeBanStatus,
 );
 
 router.post(
     "/admin",
     authMiddleware.checkAccessToken,
     commonMiddleware.isBodyValid(VALIDATORS.auth.signUp),
+    permissionMiddleware.isAdmin,
     userController.addNewAdmin,
 );
 
