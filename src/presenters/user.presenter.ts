@@ -1,3 +1,4 @@
+import { config } from "../configs/config";
 import { IPublicUser, IUser } from "../interfaces/user.interface";
 
 export const userPresenter = {
@@ -9,6 +10,9 @@ export const userPresenter = {
             id: entity._id.toString(),
             role: entity.role,
             name: entity.name,
+            avatar: entity.avatar
+                ? `${config.AWS_S3_ENDPOINT}/${entity.avatar}`
+                : "",
         };
     },
 };

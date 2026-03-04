@@ -1,15 +1,49 @@
-import { QueryFilter } from "mongoose";
+import { UploadedFile } from "express-fileupload";
+import { QueryFilter, UpdateQuery } from "mongoose";
 
+import { FileItemTypeEnum } from "../enums/file-item-type.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
 import { UserRolesEnum } from "../enums/user-roles.enum";
 import { ApiError } from "../errors/api.error";
 import { IUser, IUserCreateDto } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
+import { s3Service } from "./s3.service";
 
 export const userService = {
     create: (dto: IUserCreateDto): Promise<IUser> => {
         return userRepository.create(dto);
+    },
+    uploadAvatar: async (
+        userId: string,
+        file: UploadedFile,
+    ): Promise<IUser> => {
+        const { avatar: oldAvatar } = await userService.getById(userId);
+        const avatar = await s3Service.uploadFile(
+            file,
+            FileItemTypeEnum.USER,
+            userId,
+        );
+        const updatedUser = await userService.updateById(userId, { avatar });
+
+        if (oldAvatar) await s3Service.deleteFile(oldAvatar);
+        return updatedUser;
+    },
+    deleteAvatar: async (userId: string): Promise<IUser> => {
+        const { avatar: oldAvatar } = await userService.getById(userId);
+
+        const updatedUser = await userService.updateById(userId, {
+            avatar: "",
+        });
+
+        if (oldAvatar) await s3Service.deleteFile(oldAvatar);
+        return updatedUser;
+    },
+    updateById: (
+        userId: string,
+        params: UpdateQuery<IUser>,
+    ): Promise<IUser> => {
+        return userRepository.updateById(userId, params);
     },
     createAdmin: async (dto: IUserCreateDto): Promise<IUser> => {
         await userService.assertEmailIsUnique(dto.email);

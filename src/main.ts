@@ -1,6 +1,7 @@
 import dns from "node:dns";
 
 import express, { NextFunction, Request, Response } from "express";
+import fileUpload from "express-fileupload";
 
 import { config } from "./configs/config";
 import { cronRunner } from "./crons";
@@ -15,6 +16,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
 
 app.use("/", apiRouter);
 

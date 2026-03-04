@@ -20,6 +20,7 @@ const UserSchema = new Schema<IUser>(
             default: UserAccountTypesEnum.BASIC,
         },
         isBanned: { type: Boolean, default: false },
+        avatar: { type: String, default: "" },
     },
     {
         timestamps: true,

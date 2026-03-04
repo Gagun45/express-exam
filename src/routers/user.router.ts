@@ -1,9 +1,11 @@
 import { Router } from "express";
 
+import { FileConfig } from "../configs/file.config";
 import { userController } from "../controllers/user.controller";
 import { PermissionsEnum } from "../enums/permissions.enum";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { commonMiddleware } from "../middlewares/common.middleware";
+import { fileMiddleware } from "../middlewares/file.middleware";
 import { permissionMiddleware } from "../middlewares/permission.middleware";
 import { VALIDATORS } from "../validators/validators";
 
@@ -55,6 +57,19 @@ router.post(
     commonMiddleware.isBodyValid(VALIDATORS.auth.signUp),
     permissionMiddleware.isAdmin,
     userController.addNewAdmin,
+);
+
+router.patch(
+    "/me/avatar",
+    authMiddleware.checkAccessToken,
+    fileMiddleware.isFileValid(FileConfig.avatar, "avatar"),
+    userController.uploadAvatar,
+);
+
+router.delete(
+    "/me/avatar",
+    authMiddleware.checkAccessToken,
+    userController.resetAvatar,
 );
 
 export const userRouter = router;

@@ -9,13 +9,15 @@ export interface IUser extends IBase {
     role: UserRolesEnum;
     accountType: UserAccountTypesEnum;
     isBanned: boolean;
+    avatar: string;
 }
 
 export type IUserCreateDto = Pick<IUser, "email" | "password" | "name">;
+export type IUserUpdateDto = Partial<Pick<IUser, "name" | "avatar">>;
 export type IUserEntityCreateDto = IUserCreateDto &
     Partial<Pick<IUser, "role" | "accountType">>;
 
 export type IPublicUser = PublicEntityType<
     IUser,
-    "accountType" | "email" | "role" | "isBanned" | "name"
+    "accountType" | "email" | "role" | "isBanned" | "name" | "avatar"
 >;
