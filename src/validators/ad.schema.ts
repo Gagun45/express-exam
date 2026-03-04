@@ -27,4 +27,7 @@ export const adValidator = {
     })
         .min(1)
         .message("Provide at least one proper field"),
+    updateStatus: Joi.object({
+        status: validationFields.ad.status.required(),
+    }),
 };

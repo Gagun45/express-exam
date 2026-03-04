@@ -73,6 +73,24 @@ export const adService = {
     updateMany: (filter: QueryFilter<IAd>, params: UpdateQuery<IAd>) => {
         return adRepository.updateMany(filter, params);
     },
+    deleteOwnAd: async (adId: string, user: IUser) => {
+        const existingAd = await adService.getOneById(adId);
+        if (!existingAd.creator.equals(user._id)) {
+            throw new ApiError(
+                "Allowed to delete your own ads only",
+                StatusCodesEnum.FORBIDDEN,
+            );
+        }
+        if (existingAd.status === AdStatusEnum.DELETED) {
+            throw new ApiError(
+                "Ad is already deleted",
+                StatusCodesEnum.CONFLICT,
+            );
+        }
+        await adRepository.updateOneById(adId, {
+            status: AdStatusEnum.DELETED,
+        });
+    },
     getAll: async (
         query: IAdQuery,
     ): Promise<IPaginatedResponse<IAdPopulated>> => {
@@ -105,6 +123,16 @@ export const adService = {
             throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
         return updatedAd;
     },
+    updateStatus: async (
+        adId: string,
+        status: AdStatusEnum,
+    ): Promise<IAdPopulated> => {
+        const updatedAd = await adRepository.updateOneById(adId, { status });
+        if (!updatedAd)
+            throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
+        const populatedAd = await adRepository.findOnePopulatedById(adId);
+        return populatedAd;
+    },
     incrementAdView: async (adId: string) => {
         await viewRepository.create(adId);
         await adService.updateById(adId, { $inc: { views: 1 } });
@@ -112,7 +140,7 @@ export const adService = {
     viewPublicAd: async (adId: string): Promise<IAdPopulated> => {
         const existingAd = await adService.getOneById(adId);
         if (existingAd.status !== AdStatusEnum.ACTIVE)
-            throw new ApiError("Ad is inactive", StatusCodesEnum.BAD_REQUEST);
+            throw new ApiError("Ad is not active", StatusCodesEnum.BAD_REQUEST);
         await adService.incrementAdView(adId);
         return await adRepository.findOnePopulatedById(adId);
     },
@@ -141,8 +169,11 @@ export const adService = {
                 StatusCodesEnum.FORBIDDEN,
             );
 
-        if (existingAd.status === AdStatusEnum.INACTIVE)
-            throw new ApiError("Ad is locked", StatusCodesEnum.FORBIDDEN);
+        if (existingAd.status !== AdStatusEnum.ACTIVE)
+            throw new ApiError(
+                "Ad is locked or deleted",
+                StatusCodesEnum.FORBIDDEN,
+            );
 
         // BRAND/MODEL
         const finalBrandId = dto.carBrand ?? existingAd.carBrand;
@@ -188,8 +219,11 @@ export const adService = {
                 StatusCodesEnum.FORBIDDEN,
             );
 
-        if (existingAd.status === AdStatusEnum.INACTIVE)
-            throw new ApiError("Ad is locked", StatusCodesEnum.FORBIDDEN);
+        if (existingAd.status !== AdStatusEnum.ACTIVE)
+            throw new ApiError(
+                "Ad is locked or deleted",
+                StatusCodesEnum.FORBIDDEN,
+            );
 
         const newAttempts = existingAd.editAttempts + 1;
         const containsBannedWords =
@@ -262,7 +296,7 @@ export const adService = {
 
         if (existingAd.status !== AdStatusEnum.ACTIVE)
             throw new ApiError(
-                "Cannot get stats for inactive ad",
+                "Cannot get stats for not active ad",
                 StatusCodesEnum.BAD_REQUEST,
             );
 

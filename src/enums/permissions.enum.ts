@@ -6,4 +6,5 @@ export enum PermissionsEnum {
     CREATE_AD = "createAd",
     VIEW_REPORTS = "viewReports",
     CREATE_CITY = "createCity",
+    CHANGE_AD_STATUS = "changeAdStatus",
 }

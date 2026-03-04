@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 import { Regex } from "../constants/regex.constants";
+import { AdStatusEnum } from "../enums/ad-status.enum";
 import { CurrencyEnum } from "../enums/currency.enum";
 import { ReportTypeEnum } from "../enums/report-type.enum";
 import { UserAccountTypesEnum } from "../enums/user-account-types.enum";
@@ -32,6 +33,7 @@ export const validationFields = {
         price: Joi.number().min(1).max(999999999).strict(),
         currency: Joi.string().valid(...Object.values(CurrencyEnum)),
         city: JoiObjectId,
+        status: Joi.string().valid(...Object.values(AdStatusEnum)),
     },
     report: {
         type: Joi.string().valid(...Object.values(ReportTypeEnum)),

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
+import { AdStatusEnum } from "../enums/ad-status.enum";
 import { StatusCodesEnum } from "../enums/status-codes.enum";
 import {
     IAdCreateDto,
@@ -48,6 +49,16 @@ export const adController = {
             next(e);
         }
     },
+    deleteOwnAd: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const currentUser = res.locals.currentUser;
+            const adId = String(req.params[adIdParam]);
+            await adService.deleteOwnAd(adId, currentUser);
+            res.sendStatus(StatusCodesEnum.NO_CONTENT);
+        } catch (e) {
+            next(e);
+        }
+    },
     editDescription: async (
         req: Request,
         res: Response,
@@ -74,6 +85,17 @@ export const adController = {
             const adId = String(req.params[adIdParam]);
             const currentUser = res.locals.currentUser;
             const ad = await adService.update(adId, dto, currentUser);
+            const publicAd = adPresenter.toPublicAd(ad);
+            res.status(StatusCodesEnum.OK).json(publicAd);
+        } catch (e) {
+            next(e);
+        }
+    },
+    updateStatus: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const status = req.body.status as AdStatusEnum;
+            const adId = String(req.params[adIdParam]);
+            const ad = await adService.updateStatus(adId, status);
             const publicAd = adPresenter.toPublicAd(ad);
             res.status(StatusCodesEnum.OK).json(publicAd);
         } catch (e) {

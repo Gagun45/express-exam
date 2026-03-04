@@ -43,6 +43,14 @@ router.post(
 );
 
 router.patch(
+    `/:${adId}`,
+    authMiddleware.checkAccessToken,
+    commonMiddleware.isIdValid(adId),
+    commonMiddleware.isBodyValid(VALIDATORS.ad.update),
+    adController.update,
+);
+
+router.patch(
     `/:${adId}/description`,
     authMiddleware.checkAccessToken,
     commonMiddleware.isIdValid(adId),
@@ -51,11 +59,19 @@ router.patch(
 );
 
 router.patch(
+    `/:${adId}/status`,
+    authMiddleware.checkAccessToken,
+    commonMiddleware.isIdValid(adId),
+    commonMiddleware.isBodyValid(VALIDATORS.ad.updateStatus),
+    permissionMiddleware.hasPermission(PermissionsEnum.CHANGE_AD_STATUS),
+    adController.updateStatus,
+);
+
+router.delete(
     `/:${adId}`,
     authMiddleware.checkAccessToken,
     commonMiddleware.isIdValid(adId),
-    commonMiddleware.isBodyValid(VALIDATORS.ad.update),
-    adController.update,
+    adController.deleteOwnAd,
 );
 
 export const adRouter = router;
