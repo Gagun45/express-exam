@@ -18,4 +18,13 @@ export const adValidator = {
         page: validationFields.query.page,
         limit: validationFields.query.limit,
     }),
+    update: Joi.object({
+        carBrand: validationFields.ad.carBrand,
+        carModel: validationFields.ad.carModel,
+        price: validationFields.ad.price,
+        currency: validationFields.ad.currency,
+        city: validationFields.ad.city,
+    })
+        .min(1)
+        .message("Provide at least one proper field"),
 };

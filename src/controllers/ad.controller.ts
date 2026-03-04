@@ -1,9 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status-codes.enum";
-import { IAdCreateDto, IAdQuery } from "../interfaces/ad.interface";
+import {
+    IAdCreateDto,
+    IAdQuery,
+    IAdUpdateDto,
+} from "../interfaces/ad.interface";
 import { adPresenter } from "../presenters/ad.presenter";
 import { adService } from "../services/ad.service";
+
+const adIdParam = "adId";
 
 export const adController = {
     create: async (req: Request, res: Response, next: NextFunction) => {
@@ -49,7 +55,7 @@ export const adController = {
     ) => {
         try {
             const description = req.body.description as string;
-            const adId = String(req.params["adId"]);
+            const adId = String(req.params[adIdParam]);
             const currentUser = res.locals.currentUser;
             const ad = await adService.editDescription(
                 adId,
@@ -62,9 +68,21 @@ export const adController = {
             next(e);
         }
     },
+    update: async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = req.body as IAdUpdateDto;
+            const adId = String(req.params[adIdParam]);
+            const currentUser = res.locals.currentUser;
+            const ad = await adService.update(adId, dto, currentUser);
+            const publicAd = adPresenter.toPublicAd(ad);
+            res.status(StatusCodesEnum.OK).json(publicAd);
+        } catch (e) {
+            next(e);
+        }
+    },
     viewPublicAd: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const adId = String(req.params["adId"]);
+            const adId = String(req.params[adIdParam]);
             const ad = await adService.viewPublicAd(adId);
             const publicAd = adPresenter.toPublicAd(ad);
             res.status(StatusCodesEnum.OK).json(publicAd);
@@ -74,7 +92,7 @@ export const adController = {
     },
     getAdStats: async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const adId = String(req.params["adId"]);
+            const adId = String(req.params[adIdParam]);
             const { currentUser } = res.locals;
             const data = await adService.getAdStats(adId, currentUser);
             const publicAd = adPresenter.toPublicAd(data.ad);

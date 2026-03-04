@@ -29,11 +29,12 @@ export interface IAd extends IBase {
 
 export type IAdCreateDto = Pick<
     IAd,
-    "description" | "carBrand" | "carModel" | "city"
-> & {
-    price: number;
-    currency: CurrencyEnum;
-};
+    "description" | "carBrand" | "carModel" | "city" | "price" | "currency"
+>;
+
+export type IAdUpdateDto = Partial<
+    Pick<IAd, "carBrand" | "carModel" | "city" | "price" | "currency">
+>;
 
 export interface IAdPopulated extends Omit<
     IAd,

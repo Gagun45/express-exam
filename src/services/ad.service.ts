@@ -16,6 +16,7 @@ import {
     IAdCreateDto,
     IAdPopulated,
     IAdQuery,
+    IAdUpdateDto,
 } from "../interfaces/ad.interface";
 import { IAdStats } from "../interfaces/ad-stats.interface";
 import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
@@ -124,6 +125,52 @@ export const adService = {
             query,
         );
         return adHelper.toIPaginatedResponse(query, ads, totalItems);
+    },
+    update: async (
+        adId: string,
+        dto: IAdUpdateDto,
+        user: IUser,
+    ): Promise<IAdPopulated> => {
+        const existingAd = await adRepository.findOneById(adId);
+        if (!existingAd)
+            throw new ApiError("Ad not found", StatusCodesEnum.NOT_FOUND);
+
+        if (!existingAd.creator._id.equals(user._id))
+            throw new ApiError(
+                "You can only edit your own ads",
+                StatusCodesEnum.FORBIDDEN,
+            );
+
+        if (existingAd.status === AdStatusEnum.INACTIVE)
+            throw new ApiError("Ad is locked", StatusCodesEnum.FORBIDDEN);
+
+        // BRAND/MODEL
+        const finalBrandId = dto.carBrand ?? existingAd.carBrand;
+        const finalModelId = dto.carModel ?? existingAd.carModel;
+
+        if (dto.carBrand) {
+            await carBrandService.assertExistsById(dto.carBrand.toString());
+        }
+        const model = await carModelService.getById(finalModelId.toString());
+        if (!model.brand.equals(finalBrandId)) {
+            throw new ApiError(
+                "Model does not belong to brand",
+                StatusCodesEnum.BAD_REQUEST,
+            );
+        }
+
+        //CITY
+        if (dto.city) {
+            await cityService.assertExistsByParams({
+                _id: dto.city,
+            });
+        }
+
+        await adRepository.updateOneById(adId, {
+            ...dto,
+        });
+        const ad = await adRepository.findOnePopulatedById(adId);
+        return ad;
     },
     editDescription: async (
         adId: string,

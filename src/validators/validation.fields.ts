@@ -30,9 +30,7 @@ export const validationFields = {
         carBrand: JoiObjectId,
         carModel: JoiObjectId,
         price: Joi.number().min(1).max(999999999).strict(),
-        currency: Joi.string()
-            .valid(...Object.values(CurrencyEnum))
-            .required(),
+        currency: Joi.string().valid(...Object.values(CurrencyEnum)),
         city: JoiObjectId,
     },
     report: {

@@ -45,8 +45,17 @@ router.post(
 router.patch(
     `/:${adId}/description`,
     authMiddleware.checkAccessToken,
+    commonMiddleware.isIdValid(adId),
     commonMiddleware.isBodyValid(VALIDATORS.ad.editDescription),
     adController.editDescription,
+);
+
+router.patch(
+    `/:${adId}`,
+    authMiddleware.checkAccessToken,
+    commonMiddleware.isIdValid(adId),
+    commonMiddleware.isBodyValid(VALIDATORS.ad.update),
+    adController.update,
 );
 
 export const adRouter = router;
